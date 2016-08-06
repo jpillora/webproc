@@ -22,7 +22,7 @@ webproc dnsmasq.toml
 Where `dnsmasq.toml` is:
 
 ``` toml
-Command = "dnsmasq"
+Program = "dnsmasq"
 ```
 
 Now, you can visit http://localhost:8080 and see the process logs and status
@@ -43,9 +43,10 @@ Port = 8080
 User = ""
 Pass = ""
 
-# Command to execute (with optional arguments). Note: the process
+# Program to execute (with optional Arguments). Note: the process
 # must remain in the foreground (i.e. do NOT fork/run as daemon).
-Command = ""
+Program = ""
+Arguments = []
 
 # Log settings for the process:
 # "both" - log to both, webproc standard out/error and to the web UI log.

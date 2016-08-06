@@ -1,0 +1,139 @@
+html, body {
+	font-family: Courier, monospace;
+	padding: 0;
+	margin: 0;
+	font-family: Helvetica;
+	overflow-y: hidden;
+}
+
+body {
+	display: flex;
+	min-height: 100vh;
+}
+
+select {
+	-webkit-appearance: none
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	flex: 5;
+}
+/*===================================*/
+
+.controls {
+	flex: 0;
+	width: 150px;
+	text-align: center;
+	padding: 10px;
+	border-right: 1px solid #AAA;
+}
+
+.controls .title.info.field {
+	text-decoration: underline;;
+}
+
+.controls .info.field {
+	text-align: left;
+}
+
+.controls .status.field span {
+	font-size: 0.9em;
+}
+
+.controls .run-stats {
+	font-size: 0.9em;
+	padding-left: 20px;
+}
+
+.messages {
+	padding-top: 30px;
+}
+
+.ui.message {
+	text-align: center;
+}
+
+button {
+	width: 100px;
+}
+.ui.checkbox label {
+	cursor: pointer;
+}
+
+/*===================================*/
+.container {
+	position: relative;
+	flex: 1;
+}
+.container.editor {
+	min-height: 200px;
+}
+#editor {
+	font-family:monospace!important;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 100%;
+}
+.container.log {
+	width: 100%;
+	margin: 0;
+	padding: 10px;
+	min-height: 200px;
+	border-top: 1px solid #AAA;
+	overflow: auto;
+}
+.container.log span {
+	display: none;
+}
+.container.log.out span.out,
+.container.log.err span.err,
+.container.log.agent span.agent {
+	display: inline;
+}
+.container.log span.out {
+	color: #00207d;
+}
+.container.log span.err {
+	color: #861400;
+}
+.container.log span.agent {
+	color: grey;
+}
+.follow.icon {
+	position: absolute;
+	right: 30px;
+	bottom: 30px;
+	background: rgba(0, 0, 0, 0.1);
+	padding: 3px;
+	height: 23px;
+	width: 21px;
+	border-radius: 5px;
+}
+
+/*MOBILE*/
+@media (max-width: 736px) {
+	body {
+		flex-direction: column;
+	}
+	.controls {
+		width: 100%;
+		text-align: center;
+		border-right: none;
+		border-bottom: 1px solid #AAA;
+	}
+}
+/*HUGE*/
+@media (min-width: 1440px) {
+	.content {
+		flex-direction: row;
+	}
+	.container.log {
+		border-top: none;
+		border-left: 1px solid #AAA;
+	}
+}

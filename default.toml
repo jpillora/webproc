@@ -10,8 +10,7 @@ Pass = ""
 
 # Program to execute (with optional Arguments). Note: the process
 # must remain in the foreground (i.e. do NOT fork/run as daemon).
-Program = ""
-Arguments = []
+ProgramArgs = []
 
 # Log settings for the process:
 # "both" - log to both, webproc standard out/error and to the web UI log.
@@ -32,7 +31,7 @@ ConfigurationFiles = []
 
 # When provided, this command will be used verify all configuration changes
 # before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
-VerifyCommand = ""
+VerifyProgramArgs = []
 
 # When provided, this signal is used to restart the process. It's set to interrupt (SIGINT) by default, though
 # some programs support zero down-time configuration reloads via SIGHUP, SIGUSR2, etc.
