@@ -1,4 +1,4 @@
-package wp
+package agent
 
 import (
 	"fmt"
@@ -30,9 +30,10 @@ type Config struct {
 	Port               int       `help:"listening port"`
 	User               string    `help:"basic auth username"`
 	Pass               string    `help:"basic auth password"`
+	AllowedIPs         []string  `opts:"-"`
 	ProgramArgs        []string  `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
 	Log                Log       `opts:"-"`
-	OnExit             OnExit    `opts:"-"`
+	OnExit             OnExit    `help:"process exit action" default:"proxy"`
 	ConfigurationFiles []string  `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
 	VerifyProgramArgs  []string  `name:"verify" type:"spacelist" help:"command used to verify configuration"`
 	RestartSignal      string    `opts:"-"`
@@ -97,6 +98,15 @@ func ValidateConfig(c *Config) error {
 func (o *OnExit) UnmarshalTOML(data []byte) error {
 	*o = OnExit(quoted(data))
 	return nil
+}
+
+func (o *OnExit) Set(s string) error {
+	*o = OnExit(s)
+	return nil
+}
+
+func (o *OnExit) String() string {
+	return string(*o)
 }
 
 func (o *Log) UnmarshalTOML(data []byte) error {

@@ -15,6 +15,11 @@ select {
 	-webkit-appearance: none
 }
 
+.ui.button {
+	width: 80px;
+	padding-left: 15px;
+}
+
 .content {
 	display: flex;
 	flex-direction: column;
@@ -23,8 +28,7 @@ select {
 /*===================================*/
 
 .controls {
-	flex: 0;
-	width: 150px;
+	width: 120px;
 	text-align: center;
 	padding: 10px;
 	border-right: 1px solid #AAA;
@@ -38,7 +42,7 @@ select {
 	text-align: left;
 }
 
-.controls .status.field span {
+.controls span.smaller {
 	font-size: 0.9em;
 }
 
@@ -53,10 +57,6 @@ select {
 
 .ui.message {
 	text-align: center;
-}
-
-button {
-	width: 100px;
 }
 .ui.checkbox label {
 	cursor: pointer;

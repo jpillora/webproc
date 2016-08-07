@@ -1,21 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net"
-	"net/http"
 	"os"
 
 	"github.com/jpillora/opts"
-	"github.com/jpillora/webproc/wp"
+	"github.com/jpillora/webproc/agent"
 )
 
 var VERSION = "0.0.0-src"
 
 func main() {
 	//prepare config!
-	c := wp.Config{}
+	c := agent.Config{}
 	//parse cli
 	opts.New(&c).PkgRepo().Version(VERSION).Parse()
 	//if args contains has one non-executable file, treat as webproc file
@@ -25,31 +22,17 @@ func main() {
 		path := args[0]
 		if info, err := os.Stat(path); err == nil && info.Mode()&0111 == 0 {
 			c.ProgramArgs = nil
-			if err := wp.LoadConfig(path, &c); err != nil {
-				fatalf("load config error: %s", err)
+			if err := agent.LoadConfig(path, &c); err != nil {
+				log.Fatalf("[webproc] load config error: %s", err)
 			}
 		}
 	}
 	//validate and apply defaults
-	if err := wp.ValidateConfig(&c); err != nil {
-		fatalf("load config error: %s", err)
+	if err := agent.ValidateConfig(&c); err != nil {
+		log.Fatalf("[webproc] load config error: %s", err)
 	}
 	//server listener
-	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))
-	if err != nil {
-		fatalf("failed to start server: %s", err)
+	if err := agent.Run(c); err != nil {
+		log.Fatalf("[webproc] agent error: %s", err)
 	}
-	//create agent
-	a := wp.NewAgent(c)
-	//serve agent's root handler on another thread
-	go func() {
-		err := http.Serve(l, a)
-		fatalf("http error: %s", err)
-	}()
-	//run process
-	wp.RunProcess(c, a)
-}
-
-func fatalf(format string, args ...interface{}) {
-	log.Fatalf("[webproc] "+format, args...)
 }

@@ -6,7 +6,43 @@ editor.$blockScrolling = Infinity;
 editor.setTheme("ace/theme/github");
 editor.setAutoScrollEditorIntoView(true);
 
+var editorSetValue = function(val) {
+  var i = editor.session.doc.positionToIndex(editor.selection.getCursor());
+  editor.setValue(val, i || -1);
+}
+
 var app = angular.module('webproc', []);
+
+var since = (function() {
+  var scale = [["ms",1000], ["s",60], ["m",60], ["h",24], ["d",31], ["mth",12]];
+  return function(date) {
+    var v = +new Date()-date;
+    for(var i = 0; i < scale.length; i++) {
+      var s = scale[i];
+      if(v < s[1]) return v + s[0];
+      v = Math.round(v/s[1]);
+    }
+    return "-";
+  };
+}());
+
+app.directive("ago", function() {
+  return {
+    restrict: "A",
+    link: function(s, e, attrs) {
+      var d, t;
+      var check = function() {
+        clearTimeout(t);
+        if(d) e.text(since(d));
+        t = setTimeout(check, 1000);
+      }
+      s.$watch(attrs.ago, function(s) {
+        d = new Date(s);
+        check();
+      });
+    }
+  }
+});
 
 app.directive("log", function() {
   return {
@@ -28,7 +64,7 @@ app.directive("log", function() {
         if(scope.follow) e.scrollTop = 99999999;
       }
       angular.element(window).on('resize', followLog);
-      scope.$on('update', function(event, data) {
+      scope.$on('save', function(event, data) {
         //bound current index by min log entry
         n = Math.max(n, data.LogOffset-data.LogMaxSize);
         while(true) {
@@ -48,37 +84,12 @@ app.directive("log", function() {
   }
 });
 
-app.directive("ago", function() {
-  var scale = [["ms",1000], ["s",60], ["m",60], ["h",24], ["d",31], ["mth",12]];
-  var ago = function(str) {
-    var v = +new Date()-new Date(str);
-    for(var i = 0; i < scale.length; i++) {
-      var s = scale[i];
-      if(v < s[1]) return v + s[0];
-      v = Math.round(v/s[1]);
-    }
-    return "-";
-  };
-  return {
-    restrict: "A",
-    link: function(s, e, attrs) {
-      var str;
-      var check = function() {
-        e.text(ago(str));
-        setTimeout(check, 1000);
-      }
-      check();
-      s.$watch(attrs.ago, function(s) {
-        str = s;
-      });
-    }
-  }
-});
-
 app.run(function($rootScope, $http, $timeout) {
   var s = window.root = $rootScope;
   var inputs = s.inputs = {
-    show: {out:true,err:true,agent:false}
+    show: {out:true, err:true, agent:false},
+    file: '',
+    files: null
   };
   //server data
   var url = location.pathname.replace(/[^\/]+$/,"") + "sync";
@@ -88,27 +99,44 @@ app.run(function($rootScope, $http, $timeout) {
     v.retry();
   };
   v.onupdate = function() {
+    s.$emit('save', data);
     s.$apply();
-    s.$emit('update', data);
   };
   v.onchange = function(connected) {
     s.connected = connected;
     s.$apply();
   };
-  //put file contents into editor
-  var updateEditor = function() {
-    var v = data.Files[inputs.file] || "";
-    var curr = editor.getValue();
-    if(curr !== v)
-      editor.setValue(v, -1);
+  //
+  s.saved = true;
+  var checkSaved = function() {
+    if(!inputs.file || !inputs.files) {
+      s.saved = true;
+      return;
+    }
+    var client = inputs.files && inputs.files[inputs.file];
+    var server = data.Files[inputs.file];
+    s.saved = client === server;
   };
+  //editor changes
+  editor.on("input", function() {
+    //cache current
+    inputs.files[inputs.file] = editor.getValue();
+    checkSaved();
+    s.$apply();
+  })
   //handle changes
   s.$watch("data.Config.ConfigurationFiles", function(files) {
     s.files = files || [];
     if(s.files.length === 1 || (s.files.length >= 1 && !inputs.file)) {
       inputs.file = s.files[0];
     }
-  });
+  }, true);
+  s.$watch("data.Files", function(files) {
+    //apply intial file inputs
+    if(files && !inputs.files)
+      inputs.files = angular.copy(files);
+    checkSaved();
+  }, true);
   s.$watch("inputs.file", function(file) {
     if(!file) return;
     //extensions (choose from https://github.com/ajaxorg/ace/tree/master/lib/ace/mode)
@@ -117,22 +145,44 @@ app.run(function($rootScope, $http, $timeout) {
     if(mode === 'yml') mode = 'yaml';
     if(mode === 'go') mode = 'golang';
     editor.getSession().setMode("ace/mode/"+mode);
-    updateEditor();
+    //load file from cache
+    var v = inputs.files[inputs.file] || "";
+    var curr = editor.getValue();
+    if(curr !== v)
+      editorSetValue(v);
+    //check if saved
+    checkSaved();
   });
-  //commit change
-  s.reload = function() {
-    s.reload.ing = true;
-    s.reload.err = null;
-    $http.post('configure', {
-      file: inputs.file,
-      contents: editor.getValue()
-    }).then(function() {
-      s.reload.ed = true;
-      $timeout(function() { s.reload.ed = false; }, 5000);
+  //start/restart
+  s.start = function() {
+    var alreadyRunning = data.Running;
+    s.start.ing = true;
+    s.start.err = null;
+    $http.put('start').then(function() {
+      s.start.ed = alreadyRunning ? 'Restarted' : 'Started';
+      $timeout(function() { s.start.ed = false; }, 5000);
     }, function(resp) {
-      s.reload.err = resp.data;
+      s.start.err = resp.data;
     }).finally(function() {
-      s.reload.ing = false;
+      s.start.ing = false;
     });
+  };
+  //commit change
+  s.save = function() {
+    s.save.ing = true;
+    s.save.err = null;
+    $http.post('save', inputs.files).then(function() {
+      s.save.ed = true;
+      $timeout(function() { s.save.ed = false; }, 5000);
+    }, function(resp) {
+      s.save.err = resp.data;
+    }).finally(function() {
+      s.save.ing = false;
+    });
+  };
+
+  s.revert = function() {
+    editorSetValue(data.Files[inputs.file]);
+    checkSaved();
   };
 });

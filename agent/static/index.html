@@ -4,8 +4,9 @@
 		<title ng-bind="data.Config.ProgramArgs[0]">webproc</title>
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.2/semantic.min.css">
 		<link rel="stylesheet" href="css/app.css">
+		<style> [ng-cloak] { display: none }</style>
 	</head>
-	<body>
+	<body ng-cloak>
 		<i class="lock follow icon"></i>
 		<section class="controls">
 			<div class="ui form">
@@ -14,17 +15,16 @@
 					Status
 				</div>
 				<div class="ui info status field">
-					<i class="lightning icon" ng-class="connected ? 'green' : 'red'"></i>
-					<span ng-bind="connected ? 'Connected' : 'Disconnected'"
-						ng-click="reconnect()"
-						>Disconnected</span>
+					<i class="checkmark icon" ng-class="connected ? 'green' : 'red'"></i>
+					<span class="smaller" ng-bind="connected ? 'Connected' : 'Disconnected'"
+						ng-click="reconnect()">Disconnected</span>
 					<div ng-show="connected">
 						<i class="checkmark icon" ng-class="data.Running ? 'green' : 'red'"></i>
-						<span ng-bind="data.Running ? 'Running' : 'Exited'">Exited</span>
+						<span class="smaller" ng-bind="data.Running ? 'Running' : 'Exited'">Exited</span>
 					</div>
-					<div class="run-stats" ng-show="connected && data.Running">
-						<div><b>for</b> <span ago="data.Uptime"></span></div>
-						<div><b>pid</b> {{ data.Pid }}</div>
+					<div class="run-stats" ng-show="connected">
+						<div><b>for</b> <span ago="data.ChangedAt"></span></div>
+						<div ng-show="data.Running"><b>pid</b> {{ data.Pid }}</div>
 					</div>
 				</div>
 				<div ng-show="files.length > 1">
@@ -53,13 +53,28 @@
 					</div>
 				</div>
 				<div class="ui field">
-					<button class="ui button"
-						ng-click="reload()" ng-class="{
-							loading: reload.ing, disabled: reload.ed || !connected,
-							primary: !reload.ed, green:   reload.ed
-						}">Reload{{reload.ed?'ed':''}}</button>
+					<button class="ui button" ng-click="start()"
+						ng-class="{
+							loading: start.ing, disabled: !saved || start.ed || !connected,
+							primary: !start.ed, green:   start.ed
+						}">{{ start.ed || (data.Running ? 'Restart' : 'Start')}}</button>
 				</div>
-				<div id="err" class="ui negative message" ng-show="reload.err">{{ reload.err }}</div>
+				<div ng-show="inputs.files">
+					<div class="ui field">
+						<button class="ui button" ng-click="save()" ng-class="{
+								loading: save.ing, disabled: saved || save.ed || !connected,
+								primary: !save.ed, green:   save.ed
+							}">Save{{save.ed?'d':''}}</button>
+					</div>
+					<div class="ui field">
+						<button class="ui grey button"
+							ng-disabled="saved"
+							ng-click="revert()">Revert</button>
+					</div>
+				</div>
+				<div id="err" class="ui negative message" ng-show="start.err || save.err">
+					{{ start.err || save.err }}
+				</div>
 			</div>
 		</section>
 		<main class="content">

@@ -1,4 +1,4 @@
-package wp
+package agent
 
 type msg struct {
 	Pipe string `json:"p"`

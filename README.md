@@ -1,35 +1,74 @@
-
-:warning: In progress
-
----
-
 # webproc
 
 Wrap any program in a simple web-based user-interface
 
 ## Install
 
-...
+**Binaries**
+
+See [the latest release](https://github.com/jpillora/webproc/releases/latest) or download it now with `curl https://i.jpillora.com/webproc | bash`
+
+**Source**
+
+``` sh
+$ go get -v github.com/jpillora/webproc
+```
 
 ## Usage
 
 Let's use `webproc` to run `dnsmasq`:
 
 ```
-webproc dnsmasq.toml
+webproc --config /etc/dnsmasq.conf -- dnsmasq --no-daemon
 ```
 
-Where `dnsmasq.toml` is:
+Visit http://localhost:8080 and view the process configuration, status and logs.
 
-``` toml
-Program = "dnsmasq"
+**SCREENSHOT**
+
+Bonus, we can add configuration validation if your process supports it:
+
+```
+webproc --config /etc/dnsmasq.conf --verify 'dnsmasq --test' -- dnsmasq --no-daemon
 ```
 
-Now, you can visit http://localhost:8080 and see the process logs and status
+## CLI
+
+```
+$ webproc --help
+
+  Usage: webproc [options] args...
+
+  args can be either a command with arguments or a webproc file
+
+  Options:
+  --host, -h    listening interface
+  --port, -p    listening port
+  --user, -u    basic auth username
+  --pass        basic auth password
+  --config, -c  comma-separated list of configuration files
+  --verify, -v  command used to verify configuration
+  --help
+  --version
+
+  Version:
+    0.0.0-src
+
+  Read more:
+    https://github.com/jpillora/webproc
+
+```
 
 ## Config
 
-Here is a complete configuration with the current defaults:
+The CLI interface only exposes a subset of the configuration, to further customize
+webproc, create a `program.toml` file and then load it with:
+
+```
+webproc program.toml
+```
+
+Here is a complete configuration with the defaults, only `ProgramArgs` is **required**:
 
 [embedmd]:# (default.toml)
 ```toml
@@ -43,10 +82,13 @@ Port = 8080
 User = ""
 Pass = ""
 
+# List of IP addresses (and optional subnets) allowed to access the web UI.
+# For example, allow 192.168.0.X with "192.168.0.0/24"
+AllowedIPs = []
+
 # Program to execute (with optional Arguments). Note: the process
 # must remain in the foreground (i.e. do NOT fork/run as daemon).
-Program = ""
-Arguments = []
+ProgramArgs = []
 
 # Log settings for the process:
 # "both" - log to both, webproc standard out/error and to the web UI log.
@@ -67,7 +109,7 @@ ConfigurationFiles = []
 
 # When provided, this command will be used verify all configuration changes
 # before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
-VerifyCommand = ""
+VerifyProgramArgs = []
 
 # When provided, this signal is used to restart the process. It's set to interrupt (SIGINT) by default, though
 # some programs support zero down-time configuration reloads via SIGHUP, SIGUSR2, etc.
