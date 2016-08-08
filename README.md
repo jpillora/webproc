@@ -74,6 +74,10 @@ Here is a complete configuration with the defaults, only `ProgramArgs` is **requ
 
 [embedmd]:# (default.toml)
 ```toml
+# Program to execute (with optional Arguments). Note: the process
+# must remain in the foreground (i.e. do NOT fork/run as daemon).
+ProgramArgs = []
+
 # Interface to serve web UI. Warning: defaults to ALL interfaces.
 Host = "0.0.0.0"
 
@@ -84,9 +88,9 @@ Port = 8080
 User = ""
 Pass = ""
 
-# Program to execute (with optional Arguments). Note: the process
-# must remain in the foreground (i.e. do NOT fork/run as daemon).
-ProgramArgs = []
+# IP addresses which should be allowed to access the web UI
+# For example, ["10.0.0.0/8"]
+AllowedIPs = []
 
 # Log settings for the process:
 # "both" - log to both, webproc standard out/error and to the web UI log.
