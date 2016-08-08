@@ -1,10 +1,8 @@
-//go:generate go-bindata -pkg agent -ignore .../.DS_Store -o static.go -prefix static/ static/...
+//go:generate go-bindata -pkg agent -ignore .../.DS_Store -o agent_static.go -prefix static/ static/...
 
 package agent
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,9 +10,9 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
+	"os/signal"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
@@ -27,11 +25,11 @@ import (
 type agent struct {
 	//log
 	log      *log.Logger
-	verb     *log.Logger
 	msgQueue chan msg
 	//proc
-	proc     *exec.Cmd
-	procReqs chan procRequest
+	procState int64
+	procReqs  chan string
+	procSigs  chan os.Signal
 	//http
 	root http.Handler
 	fs   http.Handler
@@ -57,8 +55,9 @@ func Run(c Config) error {
 	a.msgQueue = make(chan msg)
 	agentWriter := &msgQueuer{"agent", a.msgQueue}
 	a.log = log.New(io.MultiWriter(os.Stdout, agentWriter), "[webproc] ", log.LstdFlags)
-	a.verb = log.New(agentWriter, "[webproc] ", log.LstdFlags)
-	a.procReqs = make(chan procRequest)
+	a.procState = procChanging
+	a.procReqs = make(chan string)
+	a.procSigs = make(chan os.Signal)
 	//sync state
 	a.data.Config = c
 	a.data.Running = false
@@ -67,6 +66,7 @@ func Run(c Config) error {
 	a.data.Log = map[int64]msg{}
 	a.data.LogOffset = 0
 	a.data.LogMaxSize = 10000
+	a.sync = velox.SyncHandler(&a.data)
 	//http
 	h := http.Handler(http.HandlerFunc(a.router))
 	//custom middleware stack
@@ -98,7 +98,6 @@ func Run(c Config) error {
 	} else {
 		a.fs = http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo})
 	}
-	a.sync = velox.SyncHandler(&a.data)
 	//grab listener
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))
 	if err != nil {
@@ -107,7 +106,24 @@ func Run(c Config) error {
 	//threads
 	go a.readLog()
 	go a.runProc(c)
+	//load from disk
 	a.readFiles()
+	//catch all signals
+	go func() {
+		signals := make(chan os.Signal)
+		signal.Notify(signals)
+		for sig := range signals {
+			if a.running() {
+				//proxy through to proc
+				a.procSigs <- sig
+			} else if sig == os.Interrupt {
+				a.log.Printf("interupt with no proc, exiting...")
+				os.Exit(0)
+			} else {
+				a.log.Printf("ignored signal: %s", sig)
+			}
+		}
+	}()
 	//serve agent's root handler
 	a.log.Printf("agent listening on http://%s:%d...", c.Host, c.Port)
 	return http.Serve(l, a)
@@ -118,9 +134,11 @@ func (a *agent) setRunning(running bool, value int) {
 	a.data.Running = running
 	a.data.ChangedAt = time.Now()
 	if running {
+		atomic.StoreInt64(&a.procState, procRunning)
 		a.data.Pid = value
 		a.data.ExitCode = 0
 	} else {
+		atomic.StoreInt64(&a.procState, procExited)
 		a.data.Pid = 0
 		a.data.ExitCode = value
 	}
@@ -128,113 +146,12 @@ func (a *agent) setRunning(running bool, value int) {
 	a.data.Push()
 }
 
-func (a *agent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.root.ServeHTTP(w, r)
-}
-
-func (a *agent) router(w http.ResponseWriter, r *http.Request) {
-	switch filepath.Base(r.URL.Path) {
-	case "velox.js":
-		velox.JS.ServeHTTP(w, r)
-	case "sync":
-		a.sync.ServeHTTP(w, r)
-	case "start":
-		a.start(w, r)
-	case "save":
-		a.save(w, r)
-	default:
-		//fallback to static files
-		a.fs.ServeHTTP(w, r)
-	}
-}
-
 func (a *agent) running() bool {
-	return a.proc != nil && a.proc.Process != nil
+	return atomic.LoadInt64(&a.procState) == procRunning
 }
 
-func (a *agent) start(w http.ResponseWriter, r *http.Request) {
-	if !a.running() {
-		a.procReqs <- procRequest{
-			req: "start",
-		}
-		a.log.Printf("triggered manual start")
-		w.WriteHeader(200)
-		return
-	}
-	//user restart
-	if err := a.restart(); err != nil {
-		http.Error(w, "failed to restart", 500)
-		return
-	}
-	w.WriteHeader(200)
-}
-
-func (a *agent) save(w http.ResponseWriter, r *http.Request) {
-	files := map[string]string{}
-	if err := json.NewDecoder(r.Body).Decode(&files); err != nil {
-		http.Error(w, "json error", 400)
-		return
-	}
-	if len(files) == 0 {
-		http.Error(w, "no files", 400)
-		return
-	}
-	//ensure in whitelist
-	for f, _ := range files {
-		allowed := false
-		for _, configFile := range a.data.Config.ConfigurationFiles {
-			if f == configFile {
-				allowed = true
-				break
-			}
-		}
-		if !allowed {
-			http.Error(w, "invalid file", 400)
-			return
-		}
-	}
-	for f, contents := range files {
-		perms := os.FileMode(600)
-		//use existing perms if able
-		exists := false
-		if info, err := os.Stat(f); err == nil {
-			perms = info.Mode().Perm()
-			exists = true
-		}
-		var newb = []byte(contents)
-		if exists {
-			b, err := ioutil.ReadFile(f)
-			if err != nil {
-				http.Error(w, "failed to read file", 500)
-				return
-			}
-			if bytes.Equal(b, newb) {
-				http.Error(w, "no change", 400)
-				return
-			}
-		}
-		if err := ioutil.WriteFile(f, newb, perms); err != nil {
-			http.Error(w, "failed to write changes", 500)
-			return
-		}
-	}
-	if a.running() {
-		if err := a.restart(); err != nil {
-			http.Error(w, "failed to restart", 500)
-			return
-		}
-	}
-	a.readFiles()
-	w.WriteHeader(200)
-	return
-}
-
-func (a *agent) restart() error {
-	a.procReqs <- procRequest{
-		req:    "restart",
-		signal: a.data.Config.GoRestartSignal,
-	}
-	return nil
+func (a *agent) restart() {
+	a.procReqs <- "restart"
 }
 
 func (a *agent) readFiles() {

@@ -9,14 +9,18 @@
 	<body ng-cloak>
 		<i class="lock follow icon"></i>
 		<section class="controls">
-			<div class="ui form">
-				<h1 class="title" ng-bind="data.Config.ProgramArgs[0]">webproc</h1>
+			<h1 class="title">
+				<span ng-bind="data.Config.ProgramArgs[0]">webproc</span>
+				<i class="inputs content icon" ng-click="showInputs = !showInputs"></i>
+			</h1>
+			<div class="ui inputs form" ng-class="{shown: showInputs}">
 				<div class="ui title info field">
 					Status
 				</div>
 				<div class="ui info status field">
 					<i class="checkmark icon" ng-class="connected ? 'green' : 'red'"></i>
-					<span class="smaller" ng-bind="connected ? 'Connected' : 'Disconnected'"
+					<span ng-class="connected ? 'connected' : 'disconnected'"
+						ng-bind="connected ? 'Connected' : 'Disconnected'"
 						ng-click="reconnect()">Disconnected</span>
 					<div ng-show="connected">
 						<i class="checkmark icon" ng-class="data.Running ? 'green' : 'red'"></i>
@@ -25,6 +29,7 @@
 					<div class="run-stats" ng-show="connected">
 						<div><b>for</b> <span ago="data.ChangedAt"></span></div>
 						<div ng-show="data.Running"><b>pid</b> {{ data.Pid }}</div>
+						<div ng-show="!data.Running"><b>code</b> {{ data.ExitCode }}</div>
 					</div>
 				</div>
 				<div ng-show="files.length > 1">

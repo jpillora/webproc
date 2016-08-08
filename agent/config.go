@@ -26,19 +26,17 @@ const (
 )
 
 type Config struct {
-	Host               string    `help:"listening interface"`
-	Port               int       `help:"listening port"`
-	User               string    `help:"basic auth username"`
-	Pass               string    `help:"basic auth password"`
-	AllowedIPs         []string  `opts:"-"`
-	ProgramArgs        []string  `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
-	Log                Log       `opts:"-"`
-	OnExit             OnExit    `help:"process exit action" default:"proxy"`
-	ConfigurationFiles []string  `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
-	VerifyProgramArgs  []string  `name:"verify" type:"spacelist" help:"command used to verify configuration"`
-	RestartSignal      string    `opts:"-"`
-	GoRestartSignal    os.Signal `opts:"-" tom:"-" json:"-"`
-	RestartTimeout     Duration  `opts:"-"`
+	Host               string   `help:"listening interface"`
+	Port               int      `help:"listening port"`
+	User               string   `help:"basic auth username"`
+	Pass               string   `help:"basic auth password"`
+	AllowedIPs         []string `opts:"-"`
+	ProgramArgs        []string `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
+	Log                Log      `opts:"-"`
+	OnExit             OnExit   `help:"process exit action" default:"proxy"`
+	ConfigurationFiles []string `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
+	VerifyProgramArgs  []string `name:"verify" type:"spacelist" help:"command used to verify configuration"`
+	RestartTimeout     Duration `opts:"-"`
 }
 
 func LoadConfig(path string, c *Config) error {
@@ -83,12 +81,6 @@ func ValidateConfig(c *Config) error {
 	}
 	if c.RestartTimeout == 0 {
 		c.RestartTimeout = Duration(30 * time.Second)
-	}
-	switch c.RestartSignal {
-	case "SIGKILL":
-		c.GoRestartSignal = os.Kill
-	default:
-		c.GoRestartSignal = os.Interrupt
 	}
 	return nil
 }

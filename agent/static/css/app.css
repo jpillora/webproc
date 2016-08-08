@@ -28,10 +28,26 @@ select {
 /*===================================*/
 
 .controls {
-	width: 120px;
+	min-width: 130px;
+	max-width: 130px;
 	text-align: center;
 	padding: 10px;
 	border-right: 1px solid #AAA;
+}
+
+.controls .checkmark.icon {
+	margin: 0;
+}
+
+.controls .inputs.icon {
+	display: none;
+}
+.controls span.connected {
+	font-size: 11px;
+}
+
+.controls span.disconnected {
+	font-size: 10px;
 }
 
 .controls .title.info.field {
@@ -121,10 +137,27 @@ select {
 		flex-direction: column;
 	}
 	.controls {
-		width: 100%;
+		max-width: 100%;
 		text-align: center;
 		border-right: none;
 		border-bottom: 1px solid #AAA;
+	}
+	.controls .title {
+		margin: 0;
+	}
+	.controls .inputs.icon {
+		display: inline-block;
+		font-size: 0.5em;
+		cursor: pointer;
+	}
+	.controls .inputs.form {
+		display: none;
+	}
+	.controls .shown.inputs.form {
+		display: block;
+	}
+	.controls .info.field {
+		text-align: center;
 	}
 }
 /*HUGE*/

@@ -33,10 +33,6 @@ ConfigurationFiles = []
 # before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
 VerifyProgramArgs = []
 
-# When provided, this signal is used to restart the process. It's set to interrupt (SIGINT) by default, though
-# some programs support zero down-time configuration reloads via SIGHUP, SIGUSR2, etc.
-RestartSignal = "SIGINT"
-
-# After the restart signal has been sent, webproc will wait for RestartTimeout before
-# forcibly restarting the process.
+# After the restart signal (SIGINT) has been sent, webproc will wait for RestartTimeout before
+# forcibly restarting the process (SIGKILL).
 RestartTimeout = "30s"

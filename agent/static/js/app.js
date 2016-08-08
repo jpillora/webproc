@@ -64,6 +64,12 @@ app.directive("log", function() {
         if(scope.follow) e.scrollTop = 99999999;
       }
       angular.element(window).on('resize', followLog);
+      scope.$on('reset', function(event, data) {
+        n = 0;
+        e.querySelectorAll("span").forEach(function(span) {
+          span.remove();
+        });
+      });
       scope.$on('save', function(event, data) {
         //bound current index by min log entry
         n = Math.max(n, data.LogOffset-data.LogMaxSize);
@@ -71,7 +77,6 @@ app.directive("log", function() {
           var m = data.Log[n];
           if(!m) break;
           n++;
-          if(m.$rendered) continue;
           var span = document.createElement("span");
           span.textContent = m.b;
           span.className = m.p;
@@ -94,11 +99,16 @@ app.run(function($rootScope, $http, $timeout) {
   //server data
   var url = location.pathname.replace(/[^\/]+$/,"") + "sync";
   var data = s.data = {};
-  var v = velox.sse(url, data);
+  var v = s.v = velox.sse(url, data);
   s.reconnect = function() {
     v.retry();
   };
+  var id = "";
   v.onupdate = function() {
+    if(v.id !== id) {
+      id = v.id;
+      s.$emit('reset');
+    }
     s.$emit('save', data);
     s.$apply();
   };
@@ -158,9 +168,9 @@ app.run(function($rootScope, $http, $timeout) {
     var alreadyRunning = data.Running;
     s.start.ing = true;
     s.start.err = null;
-    $http.put('start').then(function() {
+    $http.put('restart').then(function() {
       s.start.ed = alreadyRunning ? 'Restarted' : 'Started';
-      $timeout(function() { s.start.ed = false; }, 5000);
+      $timeout(function() { s.start.ed = false; }, 3000);
     }, function(resp) {
       s.start.err = resp.data;
     }).finally(function() {
@@ -173,7 +183,7 @@ app.run(function($rootScope, $http, $timeout) {
     s.save.err = null;
     $http.post('save', inputs.files).then(function() {
       s.save.ed = true;
-      $timeout(function() { s.save.ed = false; }, 5000);
+      $timeout(function() { s.save.ed = false; }, 3000);
     }, function(resp) {
       s.save.err = resp.data;
     }).finally(function() {
