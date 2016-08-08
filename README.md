@@ -26,11 +26,13 @@ Visit http://localhost:8080 and view the process configuration, status and logs.
 
 **SCREENSHOT**
 
-Bonus, we can add configuration validation if your process supports it:
+Bonus, we can add validation if your process supports it:
 
 ```
 webproc --config /etc/dnsmasq.conf --verify 'dnsmasq --test' -- dnsmasq --no-daemon
 ```
+
+For more features, see the [Configuration](#Configuration) file
 
 ## CLI
 
@@ -59,7 +61,7 @@ $ webproc --help
 
 ```
 
-## Config
+## Configuration
 
 The CLI interface only exposes a subset of the configuration, to further customize
 webproc, create a `program.toml` file and then load it with:
@@ -81,10 +83,6 @@ Port = 8080
 # Basic authentication settings for web UI
 User = ""
 Pass = ""
-
-# List of IP addresses (and optional subnets) allowed to access the web UI.
-# For example, allow 192.168.0.X with "192.168.0.0/24"
-AllowedIPs = []
 
 # Program to execute (with optional Arguments). Note: the process
 # must remain in the foreground (i.e. do NOT fork/run as daemon).
@@ -111,11 +109,7 @@ ConfigurationFiles = []
 # before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
 VerifyProgramArgs = []
 
-# When provided, this signal is used to restart the process. It's set to interrupt (SIGINT) by default, though
-# some programs support zero down-time configuration reloads via SIGHUP, SIGUSR2, etc.
-RestartSignal = "SIGINT"
-
-# After the restart signal has been sent, webproc will wait for RestartTimeout before
-# forcibly restarting the process.
+# After the restart signal (SIGINT) has been sent, webproc will wait for RestartTimeout before
+# forcibly restarting the process (SIGKILL).
 RestartTimeout = "30s"
 ```
