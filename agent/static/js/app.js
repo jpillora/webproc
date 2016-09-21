@@ -58,7 +58,7 @@ app.directive("log", function() {
         var follow = percent === 100;
         if(follow === scope.follow) return;
         scope.follow = follow;
-        document.querySelector(".follow.icon").style.display = follow ? 'block' : 'none';
+        document.querySelector(".follow.icon").style.opacity = follow ? 1 : 0;
       });
       function followLog() {
         if(scope.follow) e.scrollTop = 99999999;
@@ -89,13 +89,33 @@ app.directive("log", function() {
   }
 });
 
-app.run(function($rootScope, $http, $timeout) {
+app.service("sync", function() {
+  return function(obj, key) {
+    var val = localStorage.getItem(key);
+    if(val) {
+      console.log("load", key, val);
+      obj.$eval(key + "=" + val);
+    }
+    obj.$watch(key, function(val) {
+      var str = JSON.stringify(val);
+      console.log("set", key, str);
+      localStorage.setItem(key, str);
+    }, true);
+  };
+});
+
+app.run(function($rootScope, $http, $timeout, sync) {
   var s = window.root = $rootScope;
   var inputs = s.inputs = {
-    show: {out:true, err:true, agent:false},
+    show: {
+      out: true,
+      err: true,
+      agent: false
+    },
     file: '',
     files: null
   };
+  sync($rootScope, "inputs.show");
   //server data
   var url = location.pathname.replace(/[^\/]+$/,"") + "sync";
   var data = s.data = {};

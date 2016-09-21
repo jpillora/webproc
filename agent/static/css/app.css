@@ -20,57 +20,65 @@ select {
 	padding-left: 15px;
 }
 
+/*===================================*/
+main {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
 .content {
 	display: flex;
 	flex-direction: column;
-	flex: 5;
+	flex: 6;
+	width: 100%;
 }
 /*===================================*/
 
 .controls {
-	min-width: 130px;
-	max-width: 130px;
+	flex: 1;
+	min-width: 110px;
 	text-align: center;
 	padding: 10px;
 	border-right: 1px solid #AAA;
+	overflow-y: auto;
 }
-
 .controls .checkmark.icon {
 	margin: 0;
 }
-
 .controls .inputs.icon {
 	display: none;
 }
-.controls span.connected {
+/*.controls span.connected {
 	font-size: 11px;
 }
-
 .controls span.disconnected {
 	font-size: 10px;
-}
-
+}*/
 .controls .title.info.field {
-	text-decoration: underline;;
+	text-decoration: underline;
 }
-
 .controls .info.field {
 	text-align: left;
 }
-
+.controls .info.field .ui.checkbox {
+	width: 100%;
+}
 .controls span.smaller {
 	font-size: 0.9em;
 }
-
 .controls .run-stats {
 	font-size: 0.9em;
 	padding-left: 20px;
 }
 
+.follow.icon {
+	transition: opacity ease 0.3s;
+}
+
 .messages {
 	padding-top: 30px;
 }
-
 .ui.message {
 	text-align: center;
 }
@@ -87,7 +95,7 @@ select {
 	min-height: 200px;
 }
 #editor {
-	font-family:monospace!important;
+	font-family: monospace!important;
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -131,7 +139,7 @@ select {
 	border-radius: 5px;
 }
 
-/*MOBILE*/
+/*MOBILE
 @media (max-width: 736px) {
 	body {
 		flex-direction: column;
@@ -160,6 +168,7 @@ select {
 		text-align: center;
 	}
 }
+*/
 /*HUGE*/
 @media (min-width: 1440px) {
 	.content {
