@@ -65,7 +65,7 @@
 								primary: !start.ed, green:   start.ed
 							}">{{ start.ed || (data.Running ? 'Restart' : 'Start')}}</button>
 					</div>
-					<div ng-show="inputs.files.length > 0">
+					<div ng-show="inputs.file">
 						<div class="ui field">
 							<button class="ui button" ng-click="save()" ng-class="{
 									loading: save.ing, disabled: saved || save.ed || !connected,
