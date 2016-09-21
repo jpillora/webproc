@@ -22,15 +22,9 @@ Let's use `webproc` to run `dnsmasq`:
 webproc --config /etc/dnsmasq.conf -- dnsmasq --no-daemon
 ```
 
-Visit http://localhost:8080 and view the process configuration, status and logs.
+Visit [http://localhost:8080](http://localhost:8080) and view the process configuration, status and logs.
 
-**SCREENSHOT**
-
-Bonus, we can add validation if your process supports it:
-
-```
-webproc --config /etc/dnsmasq.conf --verify 'dnsmasq --test' -- dnsmasq --no-daemon
-```
+<img width="747" alt="screen shot 2016-09-22 at 1 39 01 am" src="https://cloud.githubusercontent.com/assets/633843/18718069/7d515392-8065-11e6-8ba5-86b6e59f3992.png">
 
 For more features, see the [Configuration](#Configuration) file
 
@@ -39,25 +33,25 @@ For more features, see the [Configuration](#Configuration) file
 ```
 $ webproc --help
 
-  Usage: webproc [options] args...
+    Usage: webproc [options] args...
 
-  args can be either a command with arguments or a webproc file
+    args can be either a command with arguments or a webproc file
 
-  Options:
-  --host, -h    listening interface
-  --port, -p    listening port
-  --user, -u    basic auth username
-  --pass        basic auth password
-  --config, -c  comma-separated list of configuration files
-  --verify, -v  command used to verify configuration
-  --help
-  --version
+    Options:
+    --host, -h     listening interface
+    --port, -p     listening port (env PORT)
+    --user, -u     basic auth username (env USER)
+    --pass         basic auth password (env PASS)
+    --on-exit, -o  process exit action (default proxy)
+    --config, -c   comma-separated list of configuration files
+    --help
+    --version, -v
 
-  Version:
-    0.0.0-src
+    Version:
+      0.0.0-src
 
-  Read more:
-    https://github.com/jpillora/webproc
+    Read more:
+      https://github.com/jpillora/webproc
 
 ```
 
@@ -108,10 +102,6 @@ OnExit = "proxy"
 # Configuration files to be editable by the web UI.
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
 ConfigurationFiles = []
-
-# When provided, this command will be used verify all configuration changes
-# before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
-VerifyProgramArgs = []
 
 # After the restart signal (SIGINT) has been sent, webproc will wait for RestartTimeout before
 # forcibly restarting the process (SIGKILL).
