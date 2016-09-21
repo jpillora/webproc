@@ -72,7 +72,6 @@ func Run(c Config) error {
 	//custom middleware stack
 	//3. basic-auth middleware
 	if c.User != "" || c.Pass != "" {
-		log.Printf("cookieauth")
 		h = cookieauth.Wrap(h, c.User, c.Pass)
 	}
 	//2. ipfilter middlware

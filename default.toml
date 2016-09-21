@@ -33,9 +33,9 @@ OnExit = "proxy"
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
 ConfigurationFiles = []
 
-# When provided, this command will be used verify all configuration changes
+# TODO When provided, this command will be used verify all configuration changes
 # before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
-VerifyProgramArgs = []
+# VerifyProgramArgs = []
 
 # After the restart signal (SIGINT) has been sent, webproc will wait for RestartTimeout before
 # forcibly restarting the process (SIGKILL).

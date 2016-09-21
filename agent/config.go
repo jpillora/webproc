@@ -27,16 +27,16 @@ const (
 
 type Config struct {
 	Host               string   `help:"listening interface"`
-	Port               int      `help:"listening port"`
-	User               string   `help:"basic auth username"`
-	Pass               string   `help:"basic auth password"`
+	Port               int      `help:"listening port" env:"PORT"`
+	User               string   `help:"basic auth username" env:"USER"`
+	Pass               string   `help:"basic auth password" env:"PASS"`
 	AllowedIPs         []string `opts:"-"`
 	ProgramArgs        []string `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
 	Log                Log      `opts:"-"`
 	OnExit             OnExit   `help:"process exit action" default:"proxy"`
 	ConfigurationFiles []string `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
-	VerifyProgramArgs  []string `name:"verify" type:"spacelist" help:"command used to verify configuration"`
-	RestartTimeout     Duration `opts:"-"`
+	// VerifyProgramArgs  []string `name:"verify" type:"spacelist" help:"command used to verify configuration"`
+	RestartTimeout Duration `opts:"-"`
 }
 
 func LoadConfig(path string, c *Config) error {
