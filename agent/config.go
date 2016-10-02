@@ -20,11 +20,12 @@ const (
 	LogWebUI     = "webui"
 	LogProxy     = "proxy"
 
-	OnExitRestart = "restart"
-	OnExitIgnore  = "ignore"
-	OnExitProxy   = "proxy"
+	OnExitRestart OnExit = "restart"
+	OnExitIgnore         = "ignore"
+	OnExitProxy          = "proxy"
 )
 
+//Config is shared for both toml unmarshalling and opts CLI generation
 type Config struct {
 	Host               string   `help:"listening interface"`
 	Port               int      `help:"listening port" env:"PORT"`
@@ -33,10 +34,9 @@ type Config struct {
 	AllowedIPs         []string `opts:"-"`
 	ProgramArgs        []string `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
 	Log                Log      `opts:"-"`
-	OnExit             OnExit   `help:"process exit action" default:"proxy"`
+	OnExit             OnExit   `help:"process exit action" default:"ignore"`
 	ConfigurationFiles []string `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
-	// VerifyProgramArgs  []string `name:"verify" type:"spacelist" help:"command used to verify configuration"`
-	RestartTimeout Duration `opts:"-"`
+	RestartTimeout     Duration `opts:"-"`
 }
 
 func LoadConfig(path string, c *Config) error {
@@ -77,7 +77,7 @@ func ValidateConfig(c *Config) error {
 	switch c.OnExit {
 	case OnExitProxy, OnExitIgnore, OnExitRestart:
 	default:
-		c.OnExit = OnExitProxy
+		c.OnExit = OnExitIgnore
 	}
 	if c.RestartTimeout == 0 {
 		c.RestartTimeout = Duration(30 * time.Second)

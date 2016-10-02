@@ -27,15 +27,11 @@ Log = "both"
 # "ignore" - ignore and wait for manual restart via the web UI
 # "restart" - automatically restart with exponential backoff time delay between failed restarts
 # It is recommended to use "proxy" and then to run webproc commands via a process manager.
-OnExit = "proxy"
+OnExit = "ignore"
 
 # Configuration files to be editable by the web UI.
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
 ConfigurationFiles = []
-
-# TODO When provided, this command will be used verify all configuration changes
-# before restarting the process. An exit code 0 means valid, otherwise it's assumed invalid.
-# VerifyProgramArgs = []
 
 # After the restart signal (SIGINT) has been sent, webproc will wait for RestartTimeout before
 # forcibly restarting the process (SIGKILL).
