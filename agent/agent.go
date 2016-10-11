@@ -112,12 +112,16 @@ func Run(c Config) error {
 		signals := make(chan os.Signal)
 		signal.Notify(signals)
 		for sig := range signals {
-			if a.running() {
+			if sig == os.Interrupt {
+				a.log.Printf("webproc interupted, exiting...")
+				if a.running() {
+					a.procSigs <- os.Kill
+					time.Sleep(100 * time.Millisecond)
+				}
+				os.Exit(0)
+			} else if a.running() {
 				//proxy through to proc
 				a.procSigs <- sig
-			} else if sig == os.Interrupt {
-				a.log.Printf("interupt with no proc, exiting...")
-				os.Exit(0)
 			} else {
 				a.log.Printf("ignored signal: %s", sig)
 			}
