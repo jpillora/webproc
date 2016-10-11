@@ -65,7 +65,7 @@ func Run(c Config) error {
 	a.data.Files = map[string]string{}
 	a.data.Log = map[int64]msg{}
 	a.data.LogOffset = 0
-	a.data.LogMaxSize = 10000
+	a.data.LogMaxSize = int64(c.MaxLines)
 	a.sync = velox.SyncHandler(&a.data)
 	//http
 	h := http.Handler(http.HandlerFunc(a.router))
@@ -179,11 +179,12 @@ func (a *agent) readFiles() {
 func (a *agent) readLog() {
 	for l := range a.msgQueue {
 		a.data.Lock()
-		a.data.Log[a.data.LogOffset] = l
-		a.data.LogOffset++
-		if a.data.LogOffset >= a.data.LogMaxSize {
-			delete(a.data.Log, a.data.LogMaxSize-a.data.LogOffset)
+		o := a.data.LogOffset
+		a.data.Log[o] = l
+		if o >= a.data.LogMaxSize {
+			delete(a.data.Log, o-a.data.LogMaxSize)
 		}
+		a.data.LogOffset++
 		a.data.Unlock()
 		a.data.Push()
 	}

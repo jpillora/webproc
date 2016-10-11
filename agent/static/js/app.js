@@ -81,7 +81,6 @@ app.directive("log", function() {
           span.textContent = m.b;
           span.className = m.p;
           e.appendChild(span);
-          m.$rendered = true;
         }
         followLog();
       });
@@ -90,15 +89,13 @@ app.directive("log", function() {
 });
 
 app.service("sync", function() {
-  return function(obj, key) {
+  return function(scope, key) {
     var val = localStorage.getItem(key);
     if(val) {
-      console.log("load", key, val);
-      obj.$eval(key + "=" + val);
+      scope.$eval(key + "=" + val); //assume JSON
     }
-    obj.$watch(key, function(val) {
+    scope.$watch(key, function(val) {
       var str = JSON.stringify(val);
-      console.log("set", key, str);
       localStorage.setItem(key, str);
     }, true);
   };
@@ -110,7 +107,7 @@ app.run(function($rootScope, $http, $timeout, sync) {
     show: {
       out: true,
       err: true,
-      agent: false
+      agent: true
     },
     file: '',
     files: null
