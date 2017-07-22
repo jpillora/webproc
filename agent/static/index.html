@@ -1,98 +1,101 @@
 <!DOCTYPE html>
 <html ng-app="webproc">
-	<head>
-		<title ng-bind="data.Config.ProgramArgs[0]">webproc</title>
-		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.2/semantic.min.css">
-		<link rel="stylesheet" href="css/app.css">
-		<style> [ng-cloak] { display: none }</style>
-	</head>
-	<body ng-cloak>
-		<i class="lock follow icon"></i>
-		<main>
-			<section class="controls">
-				<h1 class="title">
-					<span ng-bind="data.Config.ProgramArgs[0]">webproc</span>
-					<i class="inputs content icon" ng-click="showInputs = !showInputs"></i>
-				</h1>
-				<div class="ui inputs form" ng-class="{shown: showInputs}">
+
+<head>
+	<title ng-bind="data.Config.ProgramArgs[0]">webproc</title>
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.2/semantic.min.css">
+	<link rel="stylesheet" href="app.css">
+	<style>
+		[ng-cloak] {
+			display: none
+		}
+	</style>
+</head>
+
+<body ng-cloak>
+	<i class="lock follow icon"></i>
+	<main>
+		<section class="controls">
+			<h1 class="title">
+				<span ng-bind="data.Config.ProgramArgs[0]">webproc</span>
+				<i class="inputs content icon" ng-click="showInputs = !showInputs"></i>
+			</h1>
+			<div class="ui inputs form" ng-class="{shown: showInputs}">
+				<div class="ui title info field">
+					Status
+				</div>
+				<div class="ui info status field">
+					<i class="checkmark icon" ng-class="connected ? 'green' : 'red'"></i>
+					<span ng-class="connected ? 'connected' : 'disconnected'" ng-bind="connected ? 'Online' : 'Offline'"
+					 ng-click="reconnect()">Offline</span>
+					<div ng-show="connected">
+						<i class="checkmark icon" ng-class="data.Running ? 'green' : 'red'"></i>
+						<span ng-bind="data.Running ? 'Running' : 'Exited'">Exited</span>
+					</div>
+					<div class="run-stats" ng-show="connected">
+						<div><b>for</b> <span ago="data.ChangedAt"></span></div>
+						<div ng-show="data.Running"><b>pid</b> {{ data.Pid }}</div>
+						<div ng-show="!data.Running"><b>code</b> {{ data.ExitCode }}</div>
+					</div>
+				</div>
+				<div ng-show="files.length > 1">
 					<div class="ui title info field">
-						Status
-					</div>
-					<div class="ui info status field">
-						<i class="checkmark icon" ng-class="connected ? 'green' : 'red'"></i>
-						<span ng-class="connected ? 'connected' : 'disconnected'"
-							ng-bind="connected ? 'Online' : 'Offline'"
-							ng-click="reconnect()">Offline</span>
-						<div ng-show="connected">
-							<i class="checkmark icon" ng-class="data.Running ? 'green' : 'red'"></i>
-							<span ng-bind="data.Running ? 'Running' : 'Exited'">Exited</span>
-						</div>
-						<div class="run-stats" ng-show="connected">
-							<div><b>for</b> <span ago="data.ChangedAt"></span></div>
-							<div ng-show="data.Running"><b>pid</b> {{ data.Pid }}</div>
-							<div ng-show="!data.Running"><b>code</b> {{ data.ExitCode }}</div>
-						</div>
-					</div>
-					<div ng-show="files.length > 1">
-						<div class="ui title info field">
-							Files
-						</div>
-						<div class="ui field">
-							<select class="ui button" ng-options="f for f in files" ng-model="inputs.file"></select>
-						</div>
-					</div>
-					<div class="ui title info field">
-						Logging
-					</div>
-					<div class="ui info field">
-						<div class="ui checkbox">
-							<input type="checkbox" id="logout" ng-model="inputs.show.out">
-							<label for="logout">stdout</label>
-						</div>
-						<div class="ui checkbox">
-							<input type="checkbox" id="logerr" ng-model="inputs.show.err">
-							<label for="logerr">stderr</label>
-						</div>
-						<div class="ui checkbox">
-							<input type="checkbox" id="logagent" ng-model="inputs.show.agent">
-							<label for="logagent">agent</label>
-						</div>
+						Files
 					</div>
 					<div class="ui field">
-						<button class="ui button" ng-click="start()"
-							ng-class="{
+						<select class="ui button" ng-options="f for f in files" ng-model="inputs.file"></select>
+					</div>
+				</div>
+				<div class="ui title info field">
+					Logging
+				</div>
+				<div class="ui info field">
+					<div class="ui checkbox">
+						<input type="checkbox" id="logout" ng-model="inputs.show.out">
+						<label for="logout">stdout</label>
+					</div>
+					<div class="ui checkbox">
+						<input type="checkbox" id="logerr" ng-model="inputs.show.err">
+						<label for="logerr">stderr</label>
+					</div>
+					<div class="ui checkbox">
+						<input type="checkbox" id="logagent" ng-model="inputs.show.agent">
+						<label for="logagent">agent</label>
+					</div>
+				</div>
+				<div class="ui field">
+					<button class="ui button" ng-click="start()" ng-class="{
 								loading: start.ing, disabled: !saved || start.ed || !connected,
 								primary: !start.ed, green:   start.ed
 							}">{{ start.ed || (data.Running ? 'Restart' : 'Start')}}</button>
-					</div>
-					<div ng-show="inputs.file">
-						<div class="ui field">
-							<button class="ui button" ng-click="save()" ng-class="{
+				</div>
+				<div ng-show="inputs.file">
+					<div class="ui field">
+						<button class="ui button" ng-click="save()" ng-class="{
 									loading: save.ing, disabled: saved || save.ed || !connected,
 									primary: !save.ed, green:   save.ed
 								}">Save{{save.ed?'d':''}}</button>
-						</div>
-						<div class="ui field">
-							<button class="ui grey button"
-								ng-disabled="saved"
-								ng-click="revert()">Revert</button>
-						</div>
 					</div>
-					<div id="err" class="ui negative message" ng-show="start.err || save.err">
-						{{ start.err || save.err }}
+					<div class="ui field">
+						<button class="ui grey button" ng-disabled="saved" ng-click="revert()">Revert</button>
 					</div>
 				</div>
-			</section>
-			<section class="content">
-				<div class="editor container" ng-show="files.length > 0">
-					<div id="editor"></div>
+				<div id="err" class="ui negative message" ng-show="start.err || save.err">
+					{{ start.err || save.err }}
 				</div>
-				<pre class="log container" ng-class="{out:inputs.show.out, err:inputs.show.err, agent:inputs.show.agent}"></pre>
-			</section>
-		</main>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js" charset="utf8"></script>
-		<script src="js/velox.js"></script>
-		<script src="js/app.js"></script>
-	</body>
+			</div>
+		</section>
+		<section class="content">
+			<div class="editor container" ng-show="files.length > 0">
+				<div id="editor"></div>
+			</div>
+			<pre class="log container" ng-class="{out:inputs.show.out, err:inputs.show.err, agent:inputs.show.agent}"></pre>
+		</section>
+	</main>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js" charset="utf8"></script>
+	<script src="velox.js"></script>
+	<script src="app.js"></script>
+</body>
+
 </html>

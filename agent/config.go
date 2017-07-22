@@ -29,8 +29,8 @@ const (
 type Config struct {
 	Host               string   `help:"listening interface"`
 	Port               int      `help:"listening port" env:"PORT"`
-	User               string   `help:"basic auth username" env:"USER"`
-	Pass               string   `help:"basic auth password" env:"PASS"`
+	User               string   `help:"basic auth username" env:"HTTP_USER"`
+	Pass               string   `help:"basic auth password" env:"HTTP_PASS"`
 	AllowedIPs         []string `opts:"-"`
 	ProgramArgs        []string `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
 	Log                Log      `opts:"-"`

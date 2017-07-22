@@ -42,7 +42,7 @@ $ webproc --help
     --port, -p     listening port (env PORT)
     --user, -u     basic auth username (env USER)
     --pass         basic auth password (env PASS)
-    --on-exit, -o  process exit action (default proxy)
+    --on-exit, -o  process exit action (default ignore)
     --config, -c   comma-separated list of configuration files
     --help
     --version, -v
@@ -93,11 +93,10 @@ AllowedIPs = []
 Log = "both"
 
 # OnExit dictates what action to take when the process exits:
-# "proxy" - also exit webproc with the same exit code
 # "ignore" - ignore and wait for manual restart via the web UI
+# "proxy" - also exit webproc with the same exit code
 # "restart" - automatically restart with exponential backoff time delay between failed restarts
-# It is recommended to use "proxy" and then to run webproc commands via a process manager.
-OnExit = "proxy"
+OnExit = "ignore"
 
 # Configuration files to be editable by the web UI.
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
