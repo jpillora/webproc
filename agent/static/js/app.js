@@ -198,7 +198,9 @@ app.run(function($rootScope, $http, $timeout, sync) {
   s.save = function() {
     s.save.ing = true;
     s.save.err = null;
-    $http.post('save', inputs.files).then(function() {
+    currentFile = {}
+    currentFile[inputs.file] = inputs.files[inputs.file]
+    $http.post('save', currentFile).then(function() {
       s.save.ed = true;
       $timeout(function() { s.save.ed = false; }, 3000);
     }, function(resp) {
