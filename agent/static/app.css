@@ -1,53 +1,59 @@
-html, body {
-	font-family: Courier, monospace;
-	padding: 0;
-	margin: 0;
-	font-family: Helvetica;
-	overflow-y: hidden;
+html,
+body {
+  font-family: Courier, monospace;
+  padding: 0;
+  margin: 0;
+  font-family: Helvetica;
+  overflow-y: hidden;
 }
 
 body {
-	display: flex;
-	min-height: 100vh;
+  display: flex;
+  min-height: 100vh;
 }
 
 select {
-	-webkit-appearance: none
+  -webkit-appearance: none;
 }
 
 .ui.button {
-	width: 80px;
-	padding-left: 15px;
+  width: 80px;
+  padding-left: 15px;
 }
 
 /*===================================*/
 main {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
 
 .content {
-	display: flex;
-	flex-direction: column;
-	flex: 6;
-	width: 50%;
+  display: flex;
+  flex-direction: column;
+  flex: 6;
+  width: 50%;
 }
 /*===================================*/
 
 .controls {
-	flex: 1;
-	min-width: 110px;
-	text-align: center;
-	padding: 10px;
-	border-right: 1px solid #AAA;
-	overflow-y: auto;
+  flex: 1;
+  min-width: 110px;
+  text-align: center;
+  padding: 10px;
+  border-right: 1px solid #aaa;
+  overflow-y: auto;
 }
+
+.controls .files {
+  margin-bottom: 20px;
+}
+
 .controls .checkmark.icon {
-	margin: 0;
+  margin: 0;
 }
 .controls .inputs.icon {
-	display: none;
+  display: none;
 }
 /*.controls span.connected {
 	font-size: 11px;
@@ -56,87 +62,87 @@ main {
 	font-size: 10px;
 }*/
 .controls .title.info.field {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 .controls .info.field {
-	text-align: left;
+  text-align: left;
 }
 .controls .info.field .ui.checkbox {
-	width: 100%;
+  width: 100%;
 }
 .controls span.smaller {
-	font-size: 0.9em;
+  font-size: 0.9em;
 }
 .controls .run-stats {
-	font-size: 0.9em;
-	padding-left: 20px;
+  font-size: 0.9em;
+  padding-left: 20px;
 }
 
 .follow.icon {
-	transition: opacity ease 0.3s;
+  transition: opacity ease 0.3s;
 }
 
 .messages {
-	padding-top: 30px;
+  padding-top: 30px;
 }
 .ui.message {
-	text-align: center;
+  text-align: center;
 }
 .ui.checkbox label {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 /*===================================*/
 .container {
-	position: relative;
-	flex: 1;
+  position: relative;
+  flex: 1;
 }
 .container.editor {
-	min-height: 200px;
+  min-height: 200px;
 }
 #editor {
-	font-family: monospace!important;
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	height: 100%;
+  font-family: monospace !important;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
 }
 .container.log {
-	width: 100%;
-	margin: 0;
-	padding: 10px;
-	min-height: 200px;
-	border-top: 1px solid #AAA;
-	overflow: auto;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  min-height: 200px;
+  border-top: 1px solid #aaa;
+  overflow: auto;
 }
 .container.log span {
-	display: none;
+  display: none;
 }
 .container.log.out span.out,
 .container.log.err span.err,
 .container.log.agent span.agent {
-	display: inline;
+  display: inline;
 }
 .container.log span.out {
-	color: #00207d;
+  color: #00207d;
 }
 .container.log span.err {
-	color: #861400;
+  color: #861400;
 }
 .container.log span.agent {
-	color: grey;
+  color: grey;
 }
 .follow.icon {
-	position: absolute;
-	right: 30px;
-	bottom: 30px;
-	background: rgba(0, 0, 0, 0.1);
-	padding: 3px;
-	height: 23px;
-	width: 21px;
-	border-radius: 5px;
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 3px;
+  height: 23px;
+  width: 21px;
+  border-radius: 5px;
 }
 
 /*MOBILE
@@ -171,11 +177,11 @@ main {
 */
 /*HUGE*/
 @media (min-width: 1440px) {
-	.content {
-		flex-direction: row;
-	}
-	.container.log {
-		border-top: none;
-		border-left: 1px solid #AAA;
-	}
+  .content {
+    flex-direction: row;
+  }
+  .container.log {
+    border-top: none;
+    border-left: 1px solid #aaa;
+  }
 }

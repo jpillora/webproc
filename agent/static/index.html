@@ -2,7 +2,7 @@
 <html ng-app="webproc">
 
 <head>
-	<title ng-bind="data.Config.ProgramArgs[0]">webproc</title>
+	<title ng-bind="title">webproc</title>
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.2/semantic.min.css">
 	<link rel="stylesheet" href="app.css">
 	<style>
@@ -17,7 +17,7 @@
 	<main>
 		<section class="controls">
 			<h1 class="title">
-				<span ng-bind="data.Config.ProgramArgs[0]">webproc</span>
+				<span ng-bind="title">webproc</span>
 				<i class="inputs content icon" ng-click="showInputs = !showInputs"></i>
 			</h1>
 			<div class="ui inputs form" ng-class="{shown: showInputs}">
@@ -38,7 +38,7 @@
 						<div ng-show="!data.Running"><b>code</b> {{ data.ExitCode }}</div>
 					</div>
 				</div>
-				<div ng-show="files.length > 1">
+				<div class="files" ng-show="files.length > 1">
 					<div class="ui title info field">
 						Files
 					</div>
