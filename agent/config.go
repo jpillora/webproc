@@ -37,7 +37,7 @@ type Config struct {
 	OnExit             OnExit   `help:"process exit action" default:"ignore"`
 	ConfigurationFiles []string `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
 	RestartTimeout     Duration `opts:"-"`
-	MaxLines           int      `help:"maximum number of log lines to show in webui" default:"1000"`
+	MaxLines           int      `help:"maximum number of log lines to show in webui" default:"5000"`
 }
 
 func LoadConfig(path string, c *Config) error {
@@ -71,7 +71,7 @@ func ValidateConfig(c *Config) error {
 		c.Port = 8080
 	}
 	if c.MaxLines == 0 {
-		c.MaxLines = 1000
+		c.MaxLines = 5000
 	}
 	switch c.Log {
 	case LogBoth, LogProxy, LogWebUI:
@@ -83,7 +83,7 @@ func ValidateConfig(c *Config) error {
 	default:
 		c.OnExit = OnExitIgnore
 	}
-	if c.RestartTimeout == 0 {
+	if c.RestartTimeout <= 0 {
 		c.RestartTimeout = Duration(30 * time.Second)
 	}
 	return nil

@@ -10,6 +10,12 @@ body {
 body {
   display: flex;
   min-height: 100vh;
+  opacity: 0;
+  transition: opacity ease-in 0.6s;
+}
+
+body.loaded {
+  opacity: 1;
 }
 
 select {
@@ -25,47 +31,48 @@ select {
 main {
   display: flex;
   flex-direction: row;
-  width: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0%;
 }
 
 .content {
-  display: flex;
-  flex-direction: column;
+  /* flex item */
   flex: 6;
-  width: 50%;
+  /* flex container */
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
 }
 /*===================================*/
 
 .controls {
-  flex: 1;
-  min-width: 110px;
+  /* flex item */
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 10em;
   text-align: center;
   padding: 10px;
   border-right: 1px solid #aaa;
   overflow-y: auto;
 }
-
 .controls .files {
   margin-bottom: 20px;
 }
-
 .controls .checkmark.icon {
   margin: 0;
 }
 .controls .inputs.icon {
   display: none;
 }
-/*.controls span.connected {
-	font-size: 11px;
-}
-.controls span.disconnected {
-	font-size: 10px;
-}*/
 .controls .title.info.field {
   text-decoration: underline;
 }
 .controls .info.field {
   text-align: left;
+}
+.controls .status.field {
+  white-space: nowrap;
 }
 .controls .info.field .ui.checkbox {
   width: 100%;
@@ -77,9 +84,14 @@ main {
   font-size: 0.9em;
   padding-left: 20px;
 }
-
-.follow.icon {
-  transition: opacity ease 0.3s;
+.controls .version {
+  color: #ccc;
+  text-align: right;
+  margin: 25px 0 10px 0;
+  font-size: 0.8em;
+}
+.controls .version a {
+  color: #ccc;
 }
 
 .messages {
@@ -93,95 +105,92 @@ main {
 }
 
 /*===================================*/
-.container {
-  position: relative;
+
+.CodeMirror {
+  height: 100%;
+  width: 100%;
+}
+
+.CodeMirror .cm-out {
+  color: #001dbf;
+}
+
+.CodeMirror .cm-err {
+  color: #a50000;
+}
+
+.CodeMirror .cm-agent {
+  color: #666;
+}
+
+.CodeMirror .CodeMirror-vscrollbar,
+.CodeMirror .CodeMirror-hscrollbar {
+  transition: opacity ease-in 0.3s;
+  opacity: 0;
+}
+
+.CodeMirror:hover .CodeMirror-vscrollbar,
+.CodeMirror:hover .CodeMirror-hscrollbar {
+  opacity: 1;
+}
+
+/*===================================*/
+
+.content.panel {
+  display: flex;
+  /* vertical split */
+  flex-direction: column;
+}
+
+.content.panel > .subpanel {
   flex: 1;
+  position: relative;
 }
-.container.editor {
-  min-height: 200px;
-}
-#editor {
-  font-family: monospace !important;
+
+.content.panel > .subpanel > div {
+  flex: 1;
+  overflow: auto;
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  width: 100%;
   height: 100%;
 }
-.container.log {
-  width: 100%;
-  margin: 0;
-  padding: 10px;
-  min-height: 200px;
-  border-top: 1px solid #aaa;
-  overflow: auto;
+
+.content.panel > .editor.subpanel {
+  /* vertical split */
+  border-bottom: 1px solid #aaa;
 }
-.container.log span {
-  display: none;
+
+/*swap to horizontal split*/
+@media (max-height: 300px), (min-width: 1400px) {
+  .content.panel {
+    flex-direction: row;
+  }
+  .content.panel > .editor.subpanel {
+    border-bottom: none;
+    border-right: 1px solid #aaa;
+  }
 }
-.container.log.out span.out,
-.container.log.err span.err,
-.container.log.agent span.agent {
-  display: inline;
+
+.content.panel .editor.subpanel > div {
+  background: pink;
 }
-.container.log span.out {
-  color: #00207d;
+.content.panel .log.subpanel > div {
+  background: cyan;
 }
-.container.log span.err {
-  color: #861400;
-}
-.container.log span.agent {
-  color: grey;
-}
+
 .follow.icon {
   position: absolute;
   right: 30px;
   bottom: 30px;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(238, 238, 238, 0.9);
   padding: 3px;
   height: 23px;
   width: 21px;
   border-radius: 5px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity ease 0.3s;
 }
-
-/*MOBILE
-@media (max-width: 736px) {
-	body {
-		flex-direction: column;
-	}
-	.controls {
-		max-width: 100%;
-		text-align: center;
-		border-right: none;
-		border-bottom: 1px solid #AAA;
-	}
-	.controls .title {
-		margin: 0;
-	}
-	.controls .inputs.icon {
-		display: inline-block;
-		font-size: 0.5em;
-		cursor: pointer;
-	}
-	.controls .inputs.form {
-		display: none;
-	}
-	.controls .shown.inputs.form {
-		display: block;
-	}
-	.controls .info.field {
-		text-align: center;
-	}
-}
-*/
-/*HUGE*/
-@media (min-width: 1440px) {
-  .content {
-    flex-direction: row;
-  }
-  .container.log {
-    border-top: none;
-    border-left: 1px solid #aaa;
-  }
+.follow.ing.icon {
+  opacity: 1;
 }

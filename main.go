@@ -32,7 +32,7 @@ func main() {
 		log.Fatalf("[webproc] load config error: %s", err)
 	}
 	//server listener
-	if err := agent.Run(c); err != nil {
+	if err := agent.Run(VERSION, c); err != nil {
 		log.Fatalf("[webproc] agent error: %s", err)
 	}
 }

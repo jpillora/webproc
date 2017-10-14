@@ -49,7 +49,7 @@ func (a *agent) serveSave(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//ensure in file whitelist
-	for f, _ := range files {
+	for f := range files {
 		allowed := false
 		for _, configFile := range a.data.Config.ConfigurationFiles {
 			if f == configFile {

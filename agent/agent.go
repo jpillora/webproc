@@ -3,6 +3,7 @@
 package agent
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,6 +16,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/NYTimes/gziphandler"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/jpillora/cookieauth"
 	"github.com/jpillora/ipfilter"
@@ -38,6 +40,7 @@ type agent struct {
 	data struct {
 		sync.Mutex
 		velox.State
+		Version       string
 		Config        Config
 		ChangedAt     time.Time
 		Running       bool
@@ -50,15 +53,17 @@ type agent struct {
 	}
 }
 
-func Run(c Config) error {
+func Run(version string, c Config) error {
 	a := &agent{}
-	a.msgQueue = make(chan msg)
+	a.msgQueue = make(chan msg, 10000)
 	agentWriter := &msgQueuer{"agent", a.msgQueue}
 	a.log = log.New(io.MultiWriter(os.Stdout, agentWriter), "[webproc] ", log.LstdFlags)
 	a.procState = procChanging
 	a.procReqs = make(chan string)
 	a.procSigs = make(chan os.Signal)
 	//sync state
+	a.data.State.Throttle = 250 * time.Millisecond
+	a.data.Version = version
 	a.data.Config = c
 	a.data.Running = false
 	a.data.Manual = c.OnExit == OnExitIgnore
@@ -70,6 +75,10 @@ func Run(c Config) error {
 	//http
 	h := http.Handler(http.HandlerFunc(a.router))
 	//custom middleware stack
+	//4. gzip
+	gzipper, _ := gziphandler.NewGzipLevelAndMinSize(
+		gzip.DefaultCompression, 0)
+	h = gzipper(h)
 	//3. basic-auth middleware
 	if c.User != "" || c.Pass != "" {
 		h = cookieauth.Wrap(h, c.User, c.Pass)
@@ -103,8 +112,8 @@ func Run(c Config) error {
 		return fmt.Errorf("failed to start server: %s", err)
 	}
 	//threads
-	go a.readLog()
 	go a.runProc(c)
+	go a.readLog()
 	//load from disk
 	a.readFiles()
 	//catch all signals
