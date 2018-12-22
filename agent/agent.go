@@ -1,4 +1,4 @@
-//go:generate go-bindata -pkg agent -ignore .../.DS_Store -o agent_static.go -prefix static/ static/...
+//go:generate statik -src static
 
 package agent
 
@@ -17,11 +17,14 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
-	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/jpillora/cookieauth"
 	"github.com/jpillora/ipfilter"
 	"github.com/jpillora/requestlog"
 	"github.com/jpillora/velox"
+	"github.com/rakyll/statik/fs"
+
+	//embed static assets
+	_ "github.com/jpillora/webproc/agent/statik"
 )
 
 type agent struct {
@@ -102,9 +105,15 @@ func Run(version string, c Config) error {
 	a.root = h
 	//filesystem
 	if info, err := os.Stat("agent/static/"); err == nil && info.IsDir() {
+		a.log.Printf("agent serving local static files")
 		a.fs = http.FileServer(http.Dir("agent/static/"))
 	} else {
-		a.fs = http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo})
+		statikFS, err := fs.New()
+		if err != nil {
+			return fmt.Errorf("failed to load static assets: %s", err)
+		}
+		a.fs = http.StripPrefix("/static/", http.FileServer(statikFS))
+		// a.fs = http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo})
 	}
 	//grab listener
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))
@@ -182,11 +191,11 @@ func (a *agent) readFiles() {
 			changed = true
 		}
 	}
+	a.data.Unlock()
 	if changed {
 		a.log.Printf("loaded config files changes from disk")
+		a.data.Push()
 	}
-	a.data.Unlock()
-	a.data.Push()
 }
 
 func (a *agent) readLog() {

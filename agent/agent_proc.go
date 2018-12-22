@@ -55,10 +55,6 @@ func (a *agent) runProc(c Config) {
 }
 
 func (a *agent) runProcOnce(prog string, c Config) int {
-	//empty requests queue
-	// for len(a.procReqs) > 0 {
-	// 	<-a.procReqs
-	// }
 	//start proc
 	proc := exec.Command(prog, c.ProgramArgs[1:]...)
 	proc.Env = os.Environ()

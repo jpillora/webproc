@@ -17,12 +17,12 @@ type (
 
 const (
 	LogBoth  Log = "both"
-	LogWebUI     = "webui"
-	LogProxy     = "proxy"
+	LogWebUI Log = "webui"
+	LogProxy Log = "proxy"
 
 	OnExitRestart OnExit = "restart"
-	OnExitIgnore         = "ignore"
-	OnExitProxy          = "proxy"
+	OnExitIgnore  OnExit = "ignore"
+	OnExitProxy   OnExit = "proxy"
 )
 
 //Config is shared for both toml unmarshalling and opts CLI generation

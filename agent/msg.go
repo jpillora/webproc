@@ -13,6 +13,7 @@ type msgQueuer struct {
 }
 
 func (lq *msgQueuer) Write(data []byte) (int, error) {
+	data = stripAnsi(data)
 	l := len(data)
 	if l > 0 {
 		lines := bytes.Split(data, []byte("\n"))

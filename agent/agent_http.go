@@ -24,6 +24,8 @@ func (a *agent) router(w http.ResponseWriter, r *http.Request) {
 		a.sync.ServeHTTP(w, r)
 	case "restart":
 		a.serveRestart(w, r)
+	case "refresh":
+		a.serveRefresh(w, r)
 	case "save":
 		a.serveSave(w, r)
 	default:
@@ -33,8 +35,12 @@ func (a *agent) router(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *agent) serveRestart(w http.ResponseWriter, r *http.Request) {
-	//user restart
-	a.restart()
+	a.restart() //user restart
+	w.WriteHeader(200)
+}
+
+func (a *agent) serveRefresh(w http.ResponseWriter, r *http.Request) {
+	a.readFiles() //user refresh config files
 	w.WriteHeader(200)
 }
 
