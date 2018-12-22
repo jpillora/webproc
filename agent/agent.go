@@ -112,8 +112,7 @@ func Run(version string, c Config) error {
 		if err != nil {
 			return fmt.Errorf("failed to load static assets: %s", err)
 		}
-		a.fs = http.StripPrefix("/static/", http.FileServer(statikFS))
-		// a.fs = http.FileServer(&assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo})
+		a.fs = http.FileServer(statikFS)
 	}
 	//grab listener
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))
