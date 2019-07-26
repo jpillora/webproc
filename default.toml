@@ -33,6 +33,10 @@ OnExit = "ignore"
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
 ConfigurationFiles = []
 
+# ReloadSignal allows webproc to reload configuration without restarting the process
+# For example, dnsmasq uses SIGHUP to reload configuration.
+ReloadSignal = "SIGHUP"
+
 # After the restart signal (SIGINT) has been sent, webproc will wait for RestartTimeout before
 # forcibly restarting the process (SIGKILL).
 RestartTimeout = "30s"

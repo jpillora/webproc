@@ -12,7 +12,7 @@ require (
 	github.com/jpillora/cookieauth v0.0.0-20181130112401-3b2db39b9d2c
 	github.com/jpillora/eventsource v0.0.0-20170920003432-7ed8c999e167 // indirect
 	github.com/jpillora/ipfilter v0.0.0-20180911073613-0cbe4c7e01b1
-	github.com/jpillora/opts v0.0.0-20160806153215-3f7962811f23
+	github.com/jpillora/opts v1.1.0
 	github.com/jpillora/requestlog v0.0.0-20181015073026-df8817be5f82
 	github.com/jpillora/sizestr v0.0.0-20160130011556-e2ea2fa42fb9 // indirect
 	github.com/jpillora/velox v0.0.0-20180825063758-42845d323220

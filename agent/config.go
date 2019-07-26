@@ -27,17 +27,18 @@ const (
 
 //Config is shared for both toml unmarshalling and opts CLI generation
 type Config struct {
-	Host               string   `help:"listening interface"`
-	Port               int      `help:"listening port" env:"PORT"`
-	User               string   `help:"basic auth username" env:"HTTP_USER"`
-	Pass               string   `help:"basic auth password" env:"HTTP_PASS"`
-	AllowedIPs         []string `opts:"-"`
-	ProgramArgs        []string `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
+	Host               string   `opts:"help=listening interface"`
+	Port               int      `opts:"help=listening port, env=PORT"`
+	User               string   `opts:"help=basic auth username, env=HTTP_USER"`
+	Pass               string   `opts:"help=basic auth password, env=HTTP_PASS"`
+	AllowedIPs         []string `opts:"name=allowed-ip, help=allowed ip or cidr block"`
+	ProgramArgs        []string `opts:"mode=arg, name=arg, help=args can be either a command with arguments or a webproc file, min=1"`
 	Log                Log      `opts:"-"`
-	OnExit             OnExit   `help:"process exit action" default:"ignore"`
-	ConfigurationFiles []string `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
-	RestartTimeout     Duration `opts:"-"`
-	MaxLines           int      `help:"maximum number of log lines to show in webui" default:"5000"`
+	OnExit             OnExit   `opts:"help=process exit action, default=ignore"`
+	ConfigurationFiles []string `opts:"mode=flag, help=configuration file"`
+	ReloadSignal       string   `opts:"help=an OS signal to use to reload the configuration without restarting"`
+	RestartTimeout     Duration `opts:"help=restart timeout controls when to perform a force kill"`
+	MaxLines           int      `opts:"help=maximum number of log lines to show in webui"`
 }
 
 func LoadConfig(path string, c *Config) error {
