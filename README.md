@@ -33,25 +33,29 @@ For more features, see the [Configuration](#Configuration) file
 ```
 $ webproc --help
 
-    Usage: webproc [options] args...
+  Usage: webproc [options] <arg> [arg] ...
 
-    args can be either a command with arguments or a webproc file
+  args can be either a command with arguments or a webproc file
 
-    Options:
-    --host, -h     listening interface
-    --port, -p     listening port (env PORT)
-    --user, -u     basic auth username (env USER)
-    --pass         basic auth password (env PASS)
-    --on-exit, -o  process exit action (default ignore)
-    --config, -c   comma-separated list of configuration files
-    --help
-    --version, -v
+  Options:
+  --host, -h                listening interface (default 0.0.0.0)
+  --port, -p                listening port (default 8080, env PORT)
+  --user, -u                basic auth username (env HTTP_USER)
+  --pass                    basic auth password (env HTTP_PASS)
+  --allowed-ip, -a          allowed ip or cidr block (allows multiple)
+  --log, -l                 log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')
+  --on-exit, -o             process exit action (default ignore)
+  --configuration-file, -c  configuration file (allows multiple)
+  --restart-timeout, -r     restart timeout controls when to perform a force kill (default 30s)
+  --max-lines, -m           maximum number of log lines to show in webui (default 5000)
+  --version, -v             display version
+  --help                    display help
 
-    Version:
-      0.0.0-src
+  Version:
+    0.0.0-src
 
-    Read more:
-      https://github.com/jpillora/webproc
+  Read more:
+    https://github.com/jpillora/webproc
 
 ```
 

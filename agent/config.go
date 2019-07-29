@@ -25,19 +25,20 @@ const (
 	OnExitProxy   OnExit = "proxy"
 )
 
-//Config is shared for both toml unmarshalling and opts CLI generation
+//Config is shared for both toml unmarshalling and opts CLI generation.
+//Defaults are applied on ValidateConfig.
 type Config struct {
-	Host               string   `help:"listening interface"`
-	Port               int      `help:"listening port" env:"PORT"`
-	User               string   `help:"basic auth username" env:"HTTP_USER"`
-	Pass               string   `help:"basic auth password" env:"HTTP_PASS"`
-	AllowedIPs         []string `opts:"-"`
-	ProgramArgs        []string `type:"arglist" min:"1" name:"args" help:"args can be either a command with arguments or a webproc file"`
-	Log                Log      `opts:"-"`
-	OnExit             OnExit   `help:"process exit action" default:"ignore"`
-	ConfigurationFiles []string `name:"config" type:"commalist" help:"comma-separated list of configuration files"`
-	RestartTimeout     Duration `opts:"-"`
-	MaxLines           int      `help:"maximum number of log lines to show in webui" default:"5000"`
+	Host               string   `opts:"help=listening interface, default=0.0.0.0"`
+	Port               int      `opts:"help=listening port, default=8080, env=PORT"`
+	User               string   `opts:"help=basic auth username, env=HTTP_USER"`
+	Pass               string   `opts:"help=basic auth password, env=HTTP_PASS"`
+	AllowedIPs         []string `opts:"name=allowed-ip, help=allowed ip or cidr block"`
+	ProgramArgs        []string `opts:"mode=arg, name=arg, help=args can be either a command with arguments or a webproc file, min=1"`
+	Log                Log      `opts:"help=log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')"`
+	OnExit             OnExit   `opts:"help=process exit action, default=ignore"`
+	ConfigurationFiles []string `opts:"mode=flag, help=writable configuration file"`
+	RestartTimeout     Duration `opts:"help=restart timeout controls when to perform a force kill, default=30s"`
+	MaxLines           int      `opts:"help=maximum number of log lines to show in webui, default=5000"`
 }
 
 func LoadConfig(path string, c *Config) error {
