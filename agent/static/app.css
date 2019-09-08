@@ -57,7 +57,14 @@ main {
   overflow-y: auto;
 }
 .controls .files {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+.controls .files .grouped.fields {
+  text-align: left;
+}
+.controls .files .ui.radio label {
+  word-break: break-all;
+  text-align: left;
 }
 .controls .checkmark.icon {
   margin: 0;
@@ -102,6 +109,9 @@ main {
 }
 .ui.checkbox label {
   cursor: pointer;
+}
+.ui.form .field {
+  margin: 0 0 0.5em;
 }
 
 /*===================================*/

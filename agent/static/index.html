@@ -53,12 +53,18 @@
           </div>
           <div class="files" ng-show="files.length > 1">
             <div class="ui title info field">Files</div>
-            <div class="ui field">
-              <select
-                class="ui button"
-                ng-options="f for f in files"
-                ng-model="inputs.file"
-              ></select>
+            <div class="grouped fields">
+              <div class="field" ng-repeat="f in files">
+                <div class="ui radio checkbox">
+                  <input
+                    type="radio"
+                    id="{{ $index }}"
+                    ng-model="inputs.file"
+                    ng-value="f"
+                  />
+                  <label for="{{ $index }}">{{ f }}</label>
+                </div>
+              </div>
             </div>
           </div>
           <div class="ui title info field">Logging</div>

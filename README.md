@@ -42,17 +42,19 @@ $ webproc --help
   --port, -p                listening port (default 8080, env PORT)
   --user, -u                basic auth username (env HTTP_USER)
   --pass                    basic auth password (env HTTP_PASS)
-  --allowed-ip, -a          allowed ip or cidr block (allows multiple)
+  --allow-ip, -a            allow ip or cidr block (allows multiple)
+  --allow-country, -y       allow ip range by 2-letter ISO country code (allows multiple)
+  --trust-proxy, -t         trust proxy HTTP headers to provide remote ip address
   --log, -l                 log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')
   --on-exit, -o             process exit action (default ignore)
-  --configuration-file, -c  configuration file (allows multiple)
+  --configuration-file, -c  writable configuration file (allows multiple)
   --restart-timeout, -r     restart timeout controls when to perform a force kill (default 30s)
   --max-lines, -m           maximum number of log lines to show in webui (default 5000)
   --version, -v             display version
   --help                    display help
 
   Version:
-    0.0.0-src
+    X.Y.Z
 
   Read more:
     https://github.com/jpillora/webproc

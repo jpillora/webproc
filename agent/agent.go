@@ -87,15 +87,28 @@ func Run(version string, c Config) error {
 		h = cookieauth.Wrap(h, c.User, c.Pass)
 	}
 	//2. ipfilter middlware
-	if len(c.AllowedIPs) > 0 {
+	if len(c.AllowedIPs) > 0 || len(c.AllowedCountries) > 0 {
+		if len(c.AllowedIPs) == 0 {
+			a.log.Printf("auto-allow localhost (127.0.0.1)")
+			c.AllowedIPs = append(c.AllowedIPs, "127.0.0.1")
+		}
 		h = ipfilter.Wrap(h, ipfilter.Options{
-			AllowedIPs:     c.AllowedIPs,
-			BlockByDefault: true,
+			AllowedIPs:       c.AllowedIPs,
+			AllowedCountries: c.AllowedCountries,
+			TrustProxy:       c.TrustProxy,
+			BlockByDefault:   true,
+			Logger:           a.log,
 		})
 	}
 	//1. log middleware (log everything!)
+	var reqlogs io.Writer
+	if c.Log == LogWebUI {
+		reqlogs = agentWriter
+	} else {
+		io.MultiWriter(os.Stdout, agentWriter)
+	}
 	h = requestlog.WrapWith(h, requestlog.Options{
-		Writer: agentWriter,
+		Writer: reqlogs,
 		Colors: &requestlog.Colors{},
 		Format: `[webproc] {{ if .Timestamp }}{{ .Timestamp }} {{end}}` +
 			`{{ .Method }} {{ .Path }} {{ .Code }} ` +

@@ -32,7 +32,9 @@ type Config struct {
 	Port               int      `opts:"help=listening port, default=8080, env=PORT"`
 	User               string   `opts:"help=basic auth username, env=HTTP_USER"`
 	Pass               string   `opts:"help=basic auth password, env=HTTP_PASS"`
-	AllowedIPs         []string `opts:"name=allowed-ip, help=allowed ip or cidr block"`
+	AllowedIPs         []string `opts:"name=allow-ip, help=allow ip or cidr block"`
+	AllowedCountries   []string `opts:"name=allow-country, short=y, help=allow ip range by 2-letter ISO country code"`
+	TrustProxy         bool     `opts:"help=trust proxy HTTP headers to provide remote ip address"`
 	ProgramArgs        []string `opts:"mode=arg, name=arg, help=args can be either a command with arguments or a webproc file, min=1"`
 	Log                Log      `opts:"help=log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')"`
 	OnExit             OnExit   `opts:"help=process exit action, default=ignore"`

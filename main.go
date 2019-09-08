@@ -8,13 +8,13 @@ import (
 	"github.com/jpillora/webproc/agent"
 )
 
-var VERSION = "0.0.0-src"
+var version = "0.0.0-src"
 
 func main() {
 	//prepare config!
 	c := agent.Config{}
 	//parse cli
-	opts.New(&c).PkgRepo().Version(VERSION).Parse()
+	opts.New(&c).Name("webproc").PkgRepo().Version(version).Parse()
 	//if args contains has one non-executable file, treat as webproc file
 	//TODO: allow cli to override config file
 	args := c.ProgramArgs
@@ -32,7 +32,7 @@ func main() {
 		log.Fatalf("[webproc] load config error: %s", err)
 	}
 	//server listener
-	if err := agent.Run(VERSION, c); err != nil {
+	if err := agent.Run(version, c); err != nil {
 		log.Fatalf("[webproc] agent error: %s", err)
 	}
 }

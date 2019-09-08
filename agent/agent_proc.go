@@ -61,8 +61,18 @@ func (a *agent) runProcOnce(prog string, c Config) int {
 	if wd, err := os.Getwd(); err == nil {
 		proc.Dir = wd
 	}
-	proc.Stdout = io.MultiWriter(os.Stdout, &msgQueuer{"out", a.msgQueue})
-	proc.Stderr = io.MultiWriter(os.Stderr, &msgQueuer{"err", a.msgQueue})
+	stdout := []io.Writer{}
+	stderr := []io.Writer{}
+	if c.Log == LogBoth || c.Log == LogProxy {
+		stdout = append(stdout, os.Stdout)
+		stderr = append(stdout, os.Stderr)
+	}
+	if c.Log == LogBoth || c.Log == LogWebUI {
+		stdout = append(stdout, &msgQueuer{"out", a.msgQueue})
+		stderr = append(stdout, &msgQueuer{"err", a.msgQueue})
+	}
+	proc.Stdout = io.MultiWriter(stdout...)
+	proc.Stderr = io.MultiWriter(stderr...)
 	proc.Stdin = os.Stdin
 	if err := proc.Start(); err != nil {
 		a.log.Fatalf("program failed to start: %s", err)
