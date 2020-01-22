@@ -41,8 +41,8 @@ type Config struct {
 	TrustProxy         bool     `opts:"help=trust proxy HTTP headers to provide remote ip address"`
 	ProgramArgs        []string `opts:"mode=arg, name=arg, help=args can be either a command with arguments or a webproc file, min=1"`
 	Log                Log      `opts:"help=log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')"`
-	OnExit             OnExit   `opts:"help=process exit action, default=ignore"`
-	OnSave             OnSave   `opts:"help=config save action, default=restart"`
+	OnExit             OnExit   `opts:"help=process exit action, short=o, default=ignore"`
+	OnSave             OnSave   `opts:"help=config save action, short=s, default=restart"`
 	ConfigurationFiles []string `opts:"mode=flag, help=writable configuration file"`
 	RestartTimeout     Duration `opts:"help=restart timeout controls when to perform a force kill, default=30s"`
 	MaxLines           int      `opts:"help=maximum number of log lines to show in webui, default=5000"`
