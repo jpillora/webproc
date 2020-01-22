@@ -19,7 +19,13 @@ $ go get -v github.com/jpillora/webproc
 Let's use `webproc` to run `dnsmasq`:
 
 ```
-webproc --config /etc/dnsmasq.conf -- dnsmasq --no-daemon
+webproc --configuration-file /etc/dnsmasq.conf -- dnsmasq --no-daemon
+```
+
+Multiple config files can be specified:
+
+```
+webproc -c /etc/dnsmasq.conf -c /etc/hosts -- dnsmasq --no-daemon
 ```
 
 Visit [http://localhost:8080](http://localhost:8080) and view the process configuration, status and logs.
