@@ -23,7 +23,7 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     show: localOpts("shown", {
       out: true,
       err: true,
-      agent: true
+      agent: false
     }),
     file: "",
     files: null
