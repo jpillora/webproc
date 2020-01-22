@@ -29,6 +29,11 @@ Log = "both"
 # It is recommended to use "proxy" and then to run webproc commands via a process manager.
 OnExit = "ignore"
 
+# OnSave dictates what action to take when saving a configuration file via the UI:
+# "restart" - instantly restart the process
+# "continue" - do not restart the process (restart button must be used)
+OnExit = "restart"
+
 # Configuration files to be editable by the web UI.
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
 ConfigurationFiles = []

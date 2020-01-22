@@ -12,6 +12,7 @@ import (
 type (
 	Log      string
 	OnExit   string
+	OnSave   string
 	Duration time.Duration
 )
 
@@ -23,6 +24,9 @@ const (
 	OnExitRestart OnExit = "restart"
 	OnExitIgnore  OnExit = "ignore"
 	OnExitProxy   OnExit = "proxy"
+
+	OnSaveRestart  OnSave = "restart"
+	OnSaveContinue OnSave = "continue"
 )
 
 //Config is shared for both toml unmarshalling and opts CLI generation.
@@ -38,6 +42,7 @@ type Config struct {
 	ProgramArgs        []string `opts:"mode=arg, name=arg, help=args can be either a command with arguments or a webproc file, min=1"`
 	Log                Log      `opts:"help=log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')"`
 	OnExit             OnExit   `opts:"help=process exit action, default=ignore"`
+	OnSave             OnSave   `opts:"help=config save action, default=restart"`
 	ConfigurationFiles []string `opts:"mode=flag, help=writable configuration file"`
 	RestartTimeout     Duration `opts:"help=restart timeout controls when to perform a force kill, default=30s"`
 	MaxLines           int      `opts:"help=maximum number of log lines to show in webui, default=5000"`
@@ -86,6 +91,11 @@ func ValidateConfig(c *Config) error {
 	default:
 		c.OnExit = OnExitIgnore
 	}
+	switch c.OnSave {
+	case OnSaveContinue, OnSaveRestart:
+	default:
+		c.OnSave = OnSaveRestart
+	}
 	if c.RestartTimeout <= 0 {
 		c.RestartTimeout = Duration(30 * time.Second)
 	}
@@ -93,6 +103,11 @@ func ValidateConfig(c *Config) error {
 }
 
 // helper types
+
+func (o *OnSave) UnmarshalTOML(data []byte) error {
+	*o = OnSave(quoted(data))
+	return nil
+}
 
 func (o *OnExit) UnmarshalTOML(data []byte) error {
 	*o = OnExit(quoted(data))

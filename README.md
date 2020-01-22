@@ -47,6 +47,7 @@ $ webproc --help
   --trust-proxy, -t         trust proxy HTTP headers to provide remote ip address
   --log, -l                 log mode (must be 'webui' or 'proxy' or 'both' defaults to 'both')
   --on-exit, -o             process exit action (default ignore)
+  --on-save, -s             process save action (default restart)
   --configuration-file, -c  writable configuration file (allows multiple)
   --restart-timeout, -r     restart timeout controls when to perform a force kill (default 30s)
   --max-lines, -m           maximum number of log lines to show in webui (default 5000)
@@ -103,6 +104,11 @@ Log = "both"
 # "proxy" - also exit webproc with the same exit code
 # "restart" - automatically restart with exponential backoff time delay between failed restarts
 OnExit = "ignore"
+
+# OnSave dictates what action to take when saving a configuration file via the UI:
+# "restart" - instantly restart the process
+# "continue" - do not restart the process (restart button must be used)
+OnExit = "restart"
 
 # Configuration files to be editable by the web UI.
 # For example, dnsmasq would include "/etc/dnsmasq.conf"

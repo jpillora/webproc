@@ -96,7 +96,10 @@ func (a *agent) serveSave(w http.ResponseWriter, r *http.Request) {
 
 	a.readFiles()
 	time.Sleep(100 * time.Millisecond)
-	//a.restart()
+	switch a.data.Config.OnSave {
+		case OnSaveRestart:
+			a.restart()
+	}
 	w.WriteHeader(200)
 	return
 }
