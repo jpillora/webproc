@@ -83,18 +83,27 @@ func ValidateConfig(c *Config) error {
 	}
 	switch c.Log {
 	case LogBoth, LogProxy, LogWebUI:
-	default:
+		//valid
+	case "":
 		c.Log = LogBoth
+	default:
+		return fmt.Errorf("log option must be 'both' 'proxy' or 'webui'")
 	}
 	switch c.OnExit {
 	case OnExitProxy, OnExitIgnore, OnExitRestart:
-	default:
+		//valid
+	case "":
 		c.OnExit = OnExitIgnore
+	default:
+		return fmt.Errorf("on-exit option must be 'proxy' 'ignore' or 'restart'")
 	}
 	switch c.OnSave {
 	case OnSaveContinue, OnSaveRestart:
-	default:
+		//valid
+	case "":
 		c.OnSave = OnSaveRestart
+	default:
+		return fmt.Errorf("on-restart option must be 'continue' or 'restart'")
 	}
 	if c.RestartTimeout <= 0 {
 		c.RestartTimeout = Duration(30 * time.Second)
