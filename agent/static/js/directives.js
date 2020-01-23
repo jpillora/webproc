@@ -49,7 +49,7 @@ app.directive("cmContainer", function($rootScope) {
       if (!api) {
         throw "api not there";
       }
-      var opts = angular.extend({viewportMargin: Infinity}, api.opts);
+      var opts = angular.extend({ viewportMargin: Infinity }, api.opts);
       var editor = CodeMirror(elem, opts);
       window["cm" + name] = api;
       //optional handler
@@ -95,9 +95,6 @@ app.directive("cmContainer", function($rootScope) {
           var scrollh = elem.clientHeight + info.top;
           var p = scrollh / info.height;
           var following = p >= 0.95;
-          if (following !== api.following) {
-            console.log("follow", name, following);
-          }
           api.following = following;
           $rootScope.$applyAsync();
         };
