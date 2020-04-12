@@ -9,20 +9,22 @@ require (
 	github.com/elithrar/simple-scrypt v1.3.0 // indirect
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gavv/httpexpect v2.0.0+incompatible // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
-	github.com/gorilla/websocket v1.4.1 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/hashicorp/go-multierror v1.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
-	github.com/jpillora/ansi v1.0.0 // indirect
+	github.com/jpillora/ansi v1.0.2 // indirect
 	github.com/jpillora/backoff v1.0.0
 	github.com/jpillora/cookieauth v1.0.0
 	github.com/jpillora/eventsource v1.0.0 // indirect
-	github.com/jpillora/ipfilter v1.0.0
+	github.com/jpillora/ipfilter v1.2.1
 	github.com/jpillora/opts v1.1.2
 	github.com/jpillora/requestlog v1.0.0
 	github.com/jpillora/sizestr v1.0.0 // indirect
-	github.com/jpillora/velox v0.0.0-20180825063758-42845d323220
+	github.com/jpillora/velox v0.3.3
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a // indirect
@@ -32,7 +34,10 @@ require (
 	github.com/naoina/toml v0.1.1
 	github.com/onsi/ginkgo v1.11.0 // indirect
 	github.com/onsi/gomega v1.8.1 // indirect
-	github.com/rakyll/statik v0.1.6
+	github.com/oschwald/maxminddb-golang v1.6.0 // indirect
+	github.com/phuslu/geoip v1.0.20200318 // indirect
+	github.com/posener/complete v1.2.3 // indirect
+	github.com/rakyll/statik v0.1.7
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/valyala/fasthttp v1.8.0 // indirect
@@ -41,5 +46,8 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
+	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71 // indirect
+	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa // indirect
+	gomodules.xyz/jsonpatch/v2 v2.1.0 // indirect
+	gopkg.in/fsnotify.v1 v1.4.7
 )

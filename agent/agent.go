@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
+	"github.com/fsnotify/fsnotify"
 	"github.com/jpillora/cookieauth"
 	"github.com/jpillora/ipfilter"
 	"github.com/jpillora/requestlog"
@@ -35,10 +36,15 @@ type agent struct {
 	procState int64
 	procReqs  chan string
 	procSigs  chan os.Signal
+
+	//fsnotify watcher
+	watcher *fsnotify.Watcher
+
 	//http
 	root http.Handler
 	fs   http.Handler
 	sync http.Handler
+
 	//sync
 	data struct {
 		sync.Mutex
@@ -75,6 +81,15 @@ func Run(version string, c Config) error {
 	a.data.LogOffset = 0
 	a.data.LogMaxSize = int64(c.MaxLines)
 	a.sync = velox.SyncHandler(&a.data)
+
+	//fsnotify
+	var err error
+	a.watcher, err = fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer a.watcher.Close()
+
 	//http
 	h := http.Handler(http.HandlerFunc(a.router))
 	//custom middleware stack
@@ -137,6 +152,8 @@ func Run(version string, c Config) error {
 	go a.readLog()
 	//load from disk
 	a.readFiles()
+	//watch files
+	a.watchFiles()
 	//catch all signals
 	go func() {
 		signals := make(chan os.Signal)
@@ -207,6 +224,32 @@ func (a *agent) readFiles() {
 	if changed {
 		a.log.Printf("loaded config files changes from disk")
 		a.data.Push()
+	}
+}
+
+func (a *agent) watchFiles() {
+	// Process watcher events
+	go func() {
+		for {
+			select {
+			case event, ok := <-a.watcher.Events:
+				if !ok {
+					return
+				}
+				log.Println("event:", event)
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					a.log.Printf("modified file: %s", event.Name)
+					a.restart()
+				}
+			}
+		}
+	}()
+
+	for _, path := range a.data.Config.ConfigurationFiles {
+		err := a.watcher.Add(path)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
