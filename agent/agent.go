@@ -36,15 +36,12 @@ type agent struct {
 	procState int64
 	procReqs  chan string
 	procSigs  chan os.Signal
-
 	//fsnotify watcher
 	watcher *fsnotify.Watcher
-
 	//http
 	root http.Handler
 	fs   http.Handler
 	sync http.Handler
-
 	//sync
 	data struct {
 		sync.Mutex
@@ -228,6 +225,10 @@ func (a *agent) readFiles() {
 }
 
 func (a *agent) watchFiles() {
+	if !a.data.Config.WatchFiles {
+		return
+	}
+
 	// Process watcher events
 	go func() {
 		for {
