@@ -83,7 +83,7 @@ func Run(version string, c Config) error {
 	var err error
 	a.watcher, err = fsnotify.NewWatcher()
 	if err != nil {
-		log.Fatal(err)
+		a.log.Fatal(err)
 	}
 	defer a.watcher.Close()
 
@@ -249,7 +249,7 @@ func (a *agent) watchFiles() {
 	for _, path := range a.data.Config.ConfigurationFiles {
 		err := a.watcher.Add(path)
 		if err != nil {
-			log.Fatal(err)
+			a.log.Fatal(err)
 		}
 	}
 }
