@@ -1,4 +1,4 @@
-app.run(function($rootScope, $http, $timeout, localOpts) {
+app.run(function ($rootScope, $http, $timeout, localOpts) {
   var s = (window.root = $rootScope);
   s.title = "webproc";
   //issue a refresh on app load
@@ -7,8 +7,11 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
   s.cfg = {
     opts: {
       theme: "eclipse",
-      lineNumbers: true
-    }
+      lineNumbers: true,
+    },
+    onsave: function () {
+      s.save();
+    },
   };
   s.log = {
     mode: "log",
@@ -16,24 +19,24 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     opts: {
       theme: "eclipse",
       readOnly: true,
-      lineWrapping: true
-    }
+      lineWrapping: true,
+    },
   };
   var inputs = {
     show: localOpts("shown", {
       out: true,
       err: true,
-      agent: false
+      agent: false,
     }),
     file: "",
-    files: null
+    files: null,
   };
   s.inputs = inputs;
   //server data
   var data = (s.data = {});
   //===================================
   var currId = 0;
-  var renderLog = function(delta) {
+  var renderLog = function (delta) {
     if (!data.Log) {
       return "";
     }
@@ -56,20 +59,20 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     }
     return lines.join("");
   };
-  var renderFull = function() {
+  var renderFull = function () {
     s.log.set(renderLog(false).replace(/\n$/, ""));
   };
-  var renderDelta = function() {
+  var renderDelta = function () {
     s.log.append("\n" + renderLog(true).replace(/\n$/, ""));
   };
   //===================================
   var url = location.pathname.replace(/[^\/]+$/, "") + "sync";
   var v = (s.v = velox.sse(url, data));
-  s.reconnect = function() {
+  s.reconnect = function () {
     v.retry();
   };
   var id = "";
-  v.onupdate = function() {
+  v.onupdate = function () {
     if (v.id === id) {
       renderDelta();
     } else {
@@ -78,17 +81,17 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     id = v.id;
     s.$apply();
   };
-  v.onchange = function(connected) {
+  v.onchange = function (connected) {
     s.connected = connected;
     s.$apply();
     new Favico({
       fontFamily: "Icons",
-      bgColor: connected ? "#21BA45" : "#DB2828"
+      bgColor: connected ? "#21BA45" : "#DB2828",
     }).badge("\uf0e7");
   };
   //compare client config against server config
   s.saved = true;
-  var checkSaved = function() {
+  var checkSaved = function () {
     if (!inputs.file || !inputs.files) {
       s.saved = true;
       return;
@@ -98,14 +101,14 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     s.saved = client === server;
   };
   //editor changes
-  s.cfg.onchange = function() {
+  s.cfg.onchange = function () {
     //cache current
     inputs.files[inputs.file] = s.cfg.get();
     checkSaved();
     s.$apply();
   };
   //handle changes
-  s.$watch("data.Config.ProgramArgs", function(args) {
+  s.$watch("data.Config.ProgramArgs", function (args) {
     if (!args) {
       return;
     }
@@ -121,7 +124,7 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
 
   s.$watch(
     "data.Config.ConfigurationFiles",
-    function(files) {
+    function (files) {
       //received changes to config files
       s.files = files || [];
       if (s.files.length === 1 || (s.files.length >= 1 && !inputs.file)) {
@@ -132,7 +135,7 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
   );
   s.$watch(
     "data.Files",
-    function(files) {
+    function (files) {
       //apply intial file inputs
       if (files && !inputs.files) {
         inputs.files = angular.copy(files);
@@ -141,7 +144,7 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     },
     true
   );
-  s.$watch("inputs.file", function(file) {
+  s.$watch("inputs.file", function (file) {
     if (!file) return;
     //extensions
     var mode = "properties";
@@ -165,7 +168,7 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
 
   s.$watch(
     "inputs.show",
-    function() {
+    function () {
       if (s.log) {
         renderFull();
       }
@@ -174,29 +177,32 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
   );
 
   //start/restart
-  s.start = function() {
+  s.start = function () {
     var alreadyRunning = data.Running;
     s.start.ing = true;
     s.start.err = null;
     $http
       .put("restart")
       .then(
-        function() {
+        function () {
           s.start.ed = alreadyRunning ? "Restarted" : "Started";
-          $timeout(function() {
+          $timeout(function () {
             s.start.ed = false;
           }, 3000);
         },
-        function(resp) {
+        function (resp) {
           s.start.err = resp.data;
         }
       )
-      .finally(function() {
+      .finally(function () {
         s.start.ing = false;
       });
   };
   //commit change
-  s.save = function() {
+  s.save = function () {
+    if (s.saved || s.save.ed) {
+      return;
+    }
     s.save.ing = true;
     s.save.err = null;
     currentFile = {};
@@ -204,22 +210,22 @@ app.run(function($rootScope, $http, $timeout, localOpts) {
     $http
       .post("save", currentFile)
       .then(
-        function() {
+        function () {
           s.save.ed = true;
-          $timeout(function() {
+          $timeout(function () {
             s.save.ed = false;
           }, 3000);
         },
-        function(resp) {
+        function (resp) {
           s.save.err = resp.data;
         }
       )
-      .finally(function() {
+      .finally(function () {
         s.save.ing = false;
       });
   };
 
-  s.revert = function() {
+  s.revert = function () {
     if (data.Files && inputs.file in data.Files) {
       s.cfg.set(data.Files[inputs.file]);
     }

@@ -1,14 +1,14 @@
-app.directive("ago", function() {
-  var since = (function() {
+app.directive("ago", function () {
+  var since = (function () {
     var scale = [
       ["ms", 1000],
       ["s", 60],
       ["m", 60],
       ["h", 24],
       ["d", 31],
-      ["mth", 12]
+      ["mth", 12],
     ];
-    return function(date) {
+    return function (date) {
       var v = +new Date() - date;
       for (var i = 0; i < scale.length; i++) {
         var s = scale[i];
@@ -21,25 +21,25 @@ app.directive("ago", function() {
 
   return {
     restrict: "A",
-    link: function(s, e, attrs) {
+    link: function (s, e, attrs) {
       var d, t;
-      var check = function() {
+      var check = function () {
         clearTimeout(t);
         if (d) e.text(since(d));
         t = setTimeout(check, 1000);
       };
-      s.$watch(attrs.ago, function(s) {
+      s.$watch(attrs.ago, function (s) {
         d = new Date(s);
         check();
       });
-    }
+    },
   };
 });
 
-app.directive("cmContainer", function($rootScope) {
+app.directive("cmContainer", function ($rootScope) {
   return {
     restrict: "C",
-    link: function(scope, jq, attrs) {
+    link: function (scope, jq, attrs) {
       var elem = jq[0];
       var name = attrs.name;
       if (!name) {
@@ -49,31 +49,46 @@ app.directive("cmContainer", function($rootScope) {
       if (!api) {
         throw "api not there";
       }
-      var opts = angular.extend({ viewportMargin: Infinity }, api.opts);
+      var mac = /Mac OS X/.test(navigator.userAgent);
+      var key = mac ? "Cmd" : "Ctrl";
+      var extraKeys = {};
+      extraKeys[key + "-S"] = function () {
+        if (typeof api.onsave === "function") {
+          api.onsave();
+        }
+      };
+      extraKeys[key + "-/"] = "toggleComment";
+      var opts = angular.extend(
+        {
+          viewportMargin: Infinity,
+          extraKeys: extraKeys,
+        },
+        api.opts
+      );
       var editor = CodeMirror(elem, opts);
       window["cm" + name] = api;
       //optional handler
       if (api.onchange) {
-        editor.doc.on("change", function() {
+        editor.doc.on("change", function () {
           api.onchange();
         });
       }
       var initialMode = api.mode || null;
       //code mirror api
-      api.set = function(val) {
-        window.requestAnimationFrame(function() {
+      api.set = function (val) {
+        window.requestAnimationFrame(function () {
           editor.setValue(val || "");
           api.followScroll();
         });
       };
-      api.get = function() {
+      api.get = function () {
         return editor.getValue();
       };
-      api.append = function(line) {
+      api.append = function (line) {
         editor.replaceRange(line, CodeMirror.Pos(editor.lastLine()));
         api.followScroll();
       };
-      api.mode = function(mode) {
+      api.mode = function (mode) {
         editor.setOption("mode", mode);
         CodeMirror.autoLoadMode(editor, mode);
       };
@@ -82,15 +97,15 @@ app.directive("cmContainer", function($rootScope) {
       }
       if (api.followLock) {
         api.following = true;
-        api.followScroll = function() {
+        api.followScroll = function () {
           if (api.following) {
             root.log.editor.doc.setSelection({
               line: root.log.editor.doc.lineCount(),
-              ch: 0
+              ch: 0,
             });
           }
         };
-        api.followCheck = function() {
+        api.followCheck = function () {
           var info = editor.getScrollInfo();
           var scrollh = elem.clientHeight + info.top;
           var p = scrollh / info.height;
@@ -101,19 +116,19 @@ app.directive("cmContainer", function($rootScope) {
 
         editor.on("scroll", api.followCheck);
       } else {
-        api.followScroll = function() {
+        api.followScroll = function () {
           //noop
         };
       }
 
       scroll;
       var followLock = false;
-      api.follow = function(f) {
+      api.follow = function (f) {
         follow = f;
         //on scroll, detect if bottom, if so following=true
         //on append, if following, scroll bottom
       };
       api.editor = editor;
-    }
+    },
   };
 });
