@@ -11,35 +11,31 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gavv/httpexpect v2.0.0+incompatible // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
-	github.com/gorilla/websocket v1.4.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
-	github.com/jpillora/ansi v1.0.0 // indirect
+	github.com/jpillora/ansi v1.0.2 // indirect
 	github.com/jpillora/backoff v1.0.0
 	github.com/jpillora/cookieauth v1.0.0
-	github.com/jpillora/eventsource v1.0.0 // indirect
-	github.com/jpillora/ipfilter v1.0.0
+	github.com/jpillora/ipfilter v1.2.1
 	github.com/jpillora/opts v1.1.2
 	github.com/jpillora/requestlog v1.0.0
 	github.com/jpillora/sizestr v1.0.0 // indirect
-	github.com/jpillora/velox v0.0.0-20180825063758-42845d323220
+	github.com/jpillora/velox v0.4.0
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
-	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a // indirect
-	github.com/mattn/go-colorable v0.1.4 // indirect
+	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/naoina/toml v0.1.1
-	github.com/onsi/ginkgo v1.11.0 // indirect
-	github.com/onsi/gomega v1.8.1 // indirect
-	github.com/rakyll/statik v0.1.6
+	github.com/onsi/ginkgo v1.12.3 // indirect
+	github.com/rakyll/statik v0.1.7
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/valyala/fasthttp v1.8.0 // indirect
+	github.com/valyala/fasthttp v1.13.1 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37 // indirect
 )

@@ -85,9 +85,9 @@
               class="ui button"
               ng-click="start()"
               ng-class="{
-								loading: start.ing, disabled: !saved || start.ed || !connected,
-								primary: !start.ed, green:   start.ed
-							}"
+              loading: start.ing, disabled: !saved || start.ed || !connected,
+              primary: !start.ed, green:   start.ed
+            }"
             >
               {{ start.ed || (data.Running ? "Restart" : "Start") }}
             </button>
@@ -98,9 +98,9 @@
                 class="ui button"
                 ng-click="save()"
                 ng-class="{
-									loading: save.ing, disabled: saved || save.ed || !connected,
-									primary: !save.ed, green:   save.ed
-								}"
+                  loading: save.ing, disabled: saved || save.ed || !connected,
+                  primary: !save.ed, green:   save.ed
+                }"
               >
                 Save{{ save.ed ? "d" : "" }}
               </button>
