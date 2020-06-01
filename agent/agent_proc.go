@@ -135,7 +135,7 @@ func (a *agent) runProcOnce(prog string, c Config) int {
 				}()
 			}
 			//issue signal
-			a.log.Printf("sending signal: %s", sig)
+			a.log.Printf("sending signal: %s (%d)", sig, sig)
 			time.Sleep(100 * time.Millisecond)
 			proc.Process.Signal(sig)
 		case code := <-wait:

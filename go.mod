@@ -9,6 +9,7 @@ require (
 	github.com/elithrar/simple-scrypt v1.3.0 // indirect
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gavv/httpexpect v2.0.0+incompatible // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect

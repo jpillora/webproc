@@ -44,6 +44,7 @@ type Config struct {
 	OnExit             OnExit   `opts:"help=process exit action, short=o, default=ignore"`
 	OnSave             OnSave   `opts:"help=config save action, short=s, default=restart"`
 	ConfigurationFiles []string `opts:"mode=flag, help=writable configuration file"`
+	RestartWatch       bool     `opts:"short=w,help=changing config files on disk triggers a restart"`
 	RestartTimeout     Duration `opts:"help=restart timeout controls when to perform a force kill, default=30s"`
 	MaxLines           int      `opts:"help=maximum number of log lines to show in webui, default=5000"`
 }

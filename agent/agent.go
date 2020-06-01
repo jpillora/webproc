@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
+	"github.com/fsnotify/fsnotify"
 	"github.com/jpillora/cookieauth"
 	"github.com/jpillora/ipfilter"
 	"github.com/jpillora/requestlog"
@@ -137,11 +138,19 @@ func Run(version string, c Config) error {
 	go a.readLog()
 	//load from disk
 	a.readFiles()
+	//watch files
+	if c := a.watchFiles(); c != nil {
+		defer c.Close()
+	}
 	//catch all signals
 	go func() {
 		signals := make(chan os.Signal)
 		signal.Notify(signals)
 		for sig := range signals {
+			if sig.String() == "urgent I/O condition" {
+				//ignore due to https://github.com/golang/go/issues/37942
+				continue
+			}
 			if sig == os.Interrupt {
 				a.log.Printf("webproc interupted, exiting...")
 				if a.running() {
@@ -149,12 +158,13 @@ func Run(version string, c Config) error {
 					time.Sleep(100 * time.Millisecond)
 				}
 				os.Exit(0)
-			} else if a.running() {
-				//proxy through to proc
-				a.procSigs <- sig
-			} else {
-				a.log.Printf("ignored signal: %s", sig)
 			}
+			if !a.running() {
+				a.log.Printf("ignored signal: %s", sig)
+				continue
+			}
+			//proxy through to proc
+			a.procSigs <- sig
 		}
 	}()
 	//serve agent's root handler
@@ -187,7 +197,7 @@ func (a *agent) restart() {
 	a.procReqs <- "restart"
 }
 
-func (a *agent) readFiles() {
+func (a *agent) readFiles() bool {
 	a.data.Lock()
 	changed := false
 	for i, path := range a.data.Config.ConfigurationFiles {
@@ -200,14 +210,53 @@ func (a *agent) readFiles() {
 		curr := string(b)
 		if curr != existing {
 			a.data.Files[path] = curr
+			a.log.Printf("loaded config file '%s' from disk", path)
 			changed = true
 		}
 	}
 	a.data.Unlock()
 	if changed {
-		a.log.Printf("loaded config files changes from disk")
 		a.data.Push()
 	}
+	return changed
+}
+
+func (a *agent) watchFiles() io.Closer {
+	restart := a.data.Config.RestartWatch
+	//fsnotify
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return nil
+	}
+	//watch handler
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if event.Op&fsnotify.Write != fsnotify.Write {
+					continue
+				}
+				if !a.readFiles() {
+					continue
+				}
+				if restart {
+					a.restart()
+				}
+			}
+
+		}
+	}()
+	//watch all config files
+	for _, path := range a.data.Config.ConfigurationFiles {
+		if err := watcher.Add(path); err != nil {
+			return nil
+		}
+	}
+	//success
+	return watcher
 }
 
 func (a *agent) readLog() {
