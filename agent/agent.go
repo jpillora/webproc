@@ -259,6 +259,11 @@ func (a *agent) watchFiles() io.Closer {
 	return watcher
 }
 
+func (a *agent) getConfig() map[string]string {
+	a.readFiles()
+	return a.data.Files
+}
+
 func (a *agent) readLog() {
 	for l := range a.msgQueue {
 		a.data.Lock()

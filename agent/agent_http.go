@@ -28,6 +28,8 @@ func (a *agent) router(w http.ResponseWriter, r *http.Request) {
 		a.serveRefresh(w, r)
 	case "save":
 		a.serveSave(w, r)
+	case "getconfig":
+		a.serveConfig(w, r)
 	default:
 		//fallback to static files
 		a.fs.ServeHTTP(w, r)
@@ -41,6 +43,16 @@ func (a *agent) serveRestart(w http.ResponseWriter, r *http.Request) {
 
 func (a *agent) serveRefresh(w http.ResponseWriter, r *http.Request) {
 	a.readFiles() //user refresh config files
+	w.WriteHeader(200)
+}
+
+func (a *agent) serveConfig(w http.ResponseWriter, r *http.Request) {
+	config, err := json.Marshal(a.getConfig())
+	if err != nil {
+		http.Error(w, "json error", 400)
+		return
+	}
+	w.Write(config)
 	w.WriteHeader(200)
 }
 
