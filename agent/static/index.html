@@ -152,6 +152,12 @@
     <script src="js/velox.js"></script>
     <script>
       window.app = angular.module("webproc", []);
+      document.addEventListener('keydown', function(e) {
+        if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+          e.preventDefault();
+          window.root.save();
+        }
+      });
     </script>
     <script src="js/services.js"></script>
     <script src="js/directives.js"></script>
