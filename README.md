@@ -83,6 +83,7 @@ Here is a complete configuration with the defaults, only `ProgramArgs` is **requ
 ```toml
 # Program to execute (with optional Arguments). Note: the process
 # must remain in the foreground (i.e. do NOT fork/run as daemon).
+# example: ["/usr/bin/dnsmasq","-config","/etc/dnsmasq.conf"]
 ProgramArgs = []
 
 # Interface to serve web UI. Warning: defaults to ALL interfaces.
@@ -114,7 +115,7 @@ OnExit = "ignore"
 # OnSave dictates what action to take when saving a configuration file via the UI:
 # "restart" - instantly restart the process
 # "continue" - do not restart the process (restart button must be used)
-OnExit = "restart"
+OnSave = "restart"
 
 # Configuration files to be editable by the web UI.
 # For example, dnsmasq would include "/etc/dnsmasq.conf"
