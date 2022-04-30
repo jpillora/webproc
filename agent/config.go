@@ -32,7 +32,7 @@ const (
 //Config is shared for both toml unmarshalling and opts CLI generation.
 //Defaults are applied on ValidateConfig.
 type Config struct {
-	Host               string   `opts:"help=listening interface, default=0.0.0.0"`
+	Host               string   `opts:"help=listening interface, default=0.0.0.0, env=HOST"`
 	Port               int      `opts:"help=listening port, default=8080, env=PORT"`
 	User               string   `opts:"help=basic auth username, env=HTTP_USER"`
 	Pass               string   `opts:"help=basic auth password, env=HTTP_PASS"`
