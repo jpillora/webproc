@@ -1,9 +1,8 @@
-//go:generate statik -src static
-
 package agent
 
 import (
 	"compress/gzip"
+	"embed"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -22,11 +21,10 @@ import (
 	"github.com/jpillora/ipfilter"
 	"github.com/jpillora/requestlog"
 	"github.com/jpillora/velox"
-	"github.com/rakyll/statik/fs"
-
-	//embed static assets
-	_ "github.com/jpillora/webproc/agent/statik"
 )
+
+//go:embed static/*
+var staticFS embed.FS
 
 type agent struct {
 	//log
@@ -122,11 +120,8 @@ func Run(version string, c Config) error {
 		a.log.Printf("agent serving local static files")
 		a.fs = http.FileServer(http.Dir("agent/static/"))
 	} else {
-		statikFS, err := fs.New()
-		if err != nil {
-			return fmt.Errorf("failed to load static assets: %s", err)
-		}
-		a.fs = http.FileServer(statikFS)
+		embedFS := http.FS(staticFS)
+		a.fs = http.FileServer(embedFS)
 	}
 	//grab listener
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))

@@ -14,7 +14,6 @@ require (
 	github.com/jpillora/requestlog v1.0.0
 	github.com/jpillora/velox v0.4.2
 	github.com/naoina/toml v0.1.1
-	github.com/rakyll/statik v0.1.7
 )
 
 require (
