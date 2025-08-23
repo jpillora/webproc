@@ -64,7 +64,7 @@ func Run(version string, c Config) error {
 	a.log = log.New(io.MultiWriter(os.Stdout, agentWriter), "[webproc] ", log.LstdFlags)
 	a.procState = procChanging
 	a.procReqs = make(chan string)
-	a.procSigs = make(chan os.Signal)
+	a.procSigs = make(chan os.Signal, 1)
 	//sync state
 	a.data.State.Throttle = 250 * time.Millisecond
 	a.data.Version = version
@@ -144,7 +144,7 @@ func Run(version string, c Config) error {
 	}
 	//catch all signals
 	go func() {
-		signals := make(chan os.Signal)
+		signals := make(chan os.Signal, 1)
 		signal.Notify(signals)
 		for sig := range signals {
 			if sig.String() == "urgent I/O condition" {
