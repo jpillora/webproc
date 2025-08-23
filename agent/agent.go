@@ -1,9 +1,8 @@
-//go:generate statik -src static
-
 package agent
 
 import (
 	"compress/gzip"
+	"embed"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -22,11 +21,10 @@ import (
 	"github.com/jpillora/ipfilter"
 	"github.com/jpillora/requestlog"
 	"github.com/jpillora/velox"
-	"github.com/rakyll/statik/fs"
-
-	//embed static assets
-	_ "github.com/jpillora/webproc/agent/statik"
 )
+
+//go:embed static/*
+var staticFS embed.FS
 
 type agent struct {
 	//log
@@ -64,7 +62,7 @@ func Run(version string, c Config) error {
 	a.log = log.New(io.MultiWriter(os.Stdout, agentWriter), "[webproc] ", log.LstdFlags)
 	a.procState = procChanging
 	a.procReqs = make(chan string)
-	a.procSigs = make(chan os.Signal)
+	a.procSigs = make(chan os.Signal, 1)
 	//sync state
 	a.data.State.Throttle = 250 * time.Millisecond
 	a.data.Version = version
@@ -122,11 +120,8 @@ func Run(version string, c Config) error {
 		a.log.Printf("agent serving local static files")
 		a.fs = http.FileServer(http.Dir("agent/static/"))
 	} else {
-		statikFS, err := fs.New()
-		if err != nil {
-			return fmt.Errorf("failed to load static assets: %s", err)
-		}
-		a.fs = http.FileServer(statikFS)
+		embedFS := http.FS(staticFS)
+		a.fs = http.FileServer(embedFS)
 	}
 	//grab listener
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", c.Host, c.Port))
@@ -144,7 +139,7 @@ func Run(version string, c Config) error {
 	}
 	//catch all signals
 	go func() {
-		signals := make(chan os.Signal)
+		signals := make(chan os.Signal, 1)
 		signal.Notify(signals)
 		for sig := range signals {
 			if sig.String() == "urgent I/O condition" {
