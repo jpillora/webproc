@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       - name: goreleaser
         uses: docker://goreleaser/goreleaser:latest
         env:
